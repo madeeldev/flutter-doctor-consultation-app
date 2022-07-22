@@ -35,11 +35,20 @@ class _SignupPageState extends State<SignupPage> {
   // selected city
   String? _selectedCity;
 
+  // node
+  final _phoneNumberNode = FocusNode();
+
   // validators
+  String? _validateName(val){
+    if(val == null || val.isEmpty) {
+      return 'Name is required';
+    }
+    return null;
+  }
   _validatePhoneNumber(String? val) {
     setState(() {
       if(val != null && val.isNotEmpty) {
-        if(!RegExp(r'^[a-z]+$').hasMatch(val)) {
+        if(RegExp(r'^[0-9]*$').hasMatch(val)) {
           if(val.length == 10) {
             _phoneNumberErrMsg = '';
           } else {
@@ -53,12 +62,39 @@ class _SignupPageState extends State<SignupPage> {
       }
     });
   }
+  String? _validateEmail(String? val) {
+    if(val == null || val.isEmpty) {
+      return 'Email is required';
+    }
+    if(!EmailValidator.validate(val)) {
+      return 'Please enter valid email';
+    }
+    return null;
+  }
+  String? _validatePassword (String? val){
+    if(val == null || val.isEmpty) {
+      return 'Password is required';
+    }
+    if(val.length < 4) {
+      return 'Password must be at least 5 characters long';
+    }
+    return null;
+  }
+  String? _validateConfirmPassword (String? val){
+    if(val == null || val.isEmpty) {
+      return 'Confirm is required';
+    }
+    if(_passwordCtrl.value.text != _confirmPassCtrl.value.text) {
+      return 'Confirmation password does not match';
+    }
+    return null;
+  }
   _validateCity() {
     setState(() {
       if(_selectedCity != null && _selectedCity!.isNotEmpty) {
         _cityErrMsg = '';
       } else {
-        _cityErrMsg = 'Selection of City is required!';
+        _cityErrMsg = 'Selection of City is required';
       }
     });
   }
@@ -144,112 +180,39 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(height: size.height * 0.05,),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TextFormField(
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        hintText: 'Full Name',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: size.height * 0.023),
-                      ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (val){
-                        if(val == null || val.isEmpty) {
-                          return 'Name is required';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const  SizedBox(height: 15,),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
+                    child: Stack(
                       children: [
                         Container(
-                          alignment: Alignment.center,
-                          height: size.height * 0.07,
-                          width: double.infinity,
+                          height: 58,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
-                          ),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.only(bottom: 1),
-                                      child: Text(
-                                        '+',
-                                        style: TextStyle(
-                                            color: Colors.black.withOpacity(0.7),
-                                            fontSize: size.width*0.040,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: 1
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      '92',
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.7),
-                                          fontSize: size.width*0.040,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                width: 1.5,
-                                height: size.height * 0.04,
-                                color: Colors.grey,
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                                  child: TextFormField(
-                                    controller: _phoneNumberCtrl,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(10),
-                                    ],
-                                    cursorColor: Colors.black,
-                                    decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Phone Number'
-                                    ),
-                                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                                    onChanged: _validatePhoneNumber,
-                                  ),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kColorPrimary.withOpacity(0.2),
+                                blurRadius: 1,
+                                offset: const Offset(
+                                    0.0,
+                                    3
                                 ),
                               ),
                             ],
+                            borderRadius: BorderRadius.circular(5),
                           ),
                         ),
-                        Container(
-                          height: _phoneNumberErrMsg.isEmpty ? 0: null,
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 6, left: 16),
-                            child: Text(
-                              _phoneNumberErrMsg,
-                              style: const TextStyle(
-                                color: kColorPrimary,
-                                fontSize: 12,
-                              ),
+                        TextFormField(
+                          cursorColor: Colors.black,
+                          decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
                             ),
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            hintText: 'Full Name',
                           ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: _validateName,
                         ),
                       ],
                     ),
@@ -257,148 +220,319 @@ class _SignupPageState extends State<SignupPage> {
                   const  SizedBox(height: 15,),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TextFormField(
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        hintText: 'Email',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: size.height * 0.023),
-                      ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (val){
-                        if(val == null || val.isEmpty) {
-                          return 'Email is required';
-                        }
-                        if(!EmailValidator.validate(val)) {
-                          return 'Please enter valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const  SizedBox(height: 15,),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TextFormField(
-                      cursorColor: Colors.black,
-                      obscureText: _showPassword ? false : true,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        hintText: 'Password',
-                        suffix: GestureDetector(
-                          onTap: () => setState(() => _showPassword = !_showPassword),
-                          child: Text(
-                            _showPassword ? 'Hide' : 'Show',
-                          ),
-                        ),
-                        suffixStyle: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: size.height * 0.023),
-                      ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (val){
-                        if(val == null || val.isEmpty) {
-                          return 'Password is required';
-                        }
-                        if(val.length < 4) {
-                          return 'Password must be at least 5 characters long!';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const  SizedBox(height: 15,),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TextFormField(
-                      cursorColor: Colors.black,
-                      obscureText: _showPassword ? false : true,
-                      decoration: InputDecoration(
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        border: const OutlineInputBorder(),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: kColorPrimary, width: 1),
-                        ),
-                        hintText: 'Confirm Password',
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: size.height * 0.023),
-                      ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (val){
-                        if(val == null || val.isEmpty) {
-                          return 'Confirm is required';
-                        }
-                        if(_passwordCtrl.value.text != _confirmPassCtrl.value.text) {
-                          return 'Confirmation password does not match';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const  SizedBox(height: 15,),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
+                    child: Stack(
                       children: [
                         Container(
-                          alignment: Alignment.center,
-                          height: size.height * 0.07,
-                          width: double.infinity,
+                          height: 60,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                hint: const Text('Select City'),
-                                isExpanded: true,
-                                value: _selectedCity,
-                                onChanged: (selectedVal) {
-                                  setState(() {
-                                    _selectedCity = selectedVal;
-                                    _cityErrMsg = '';
-                                  });
-                                },
-                                items: _dropdownItems.map((String items) {
-                                  return DropdownMenuItem<String>(
-                                    value: items,
-                                    child: Text(items),
-                                  );
-                                }).toList(),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kColorPrimary.withOpacity(0.2),
+                                blurRadius: 1,
+                                offset: const Offset(
+                                    0.0,
+                                    3
+                                ),
                               ),
-                            ),
+                            ],
+                            borderRadius: BorderRadius.circular(5),
                           ),
                         ),
-                        Container(
-                          height: _cityErrMsg.isEmpty ? 0: null,
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 6, left: 16),
-                            child: Text(
-                              _cityErrMsg,
-                              style: const TextStyle(
-                                color: kColorPrimary,
-                                fontSize: 12,
+                        Column(
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              height: 60,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        FocusScope.of(context).requestFocus(_phoneNumberNode);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            padding: const EdgeInsets.only(bottom: 1),
+                                            child: Text(
+                                              '+',
+                                              style: TextStyle(
+                                                color: kColorPrimary,
+                                                fontSize: size.width*0.038,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            '92',
+                                            style: TextStyle(
+                                              color: kColorPrimary,
+                                              fontSize: size.width*0.035,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    color: kColorPrimary.withOpacity(0.5),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      child: TextFormField(
+                                        focusNode: _phoneNumberNode,
+                                        controller: _phoneNumberCtrl,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(10),
+                                        ],
+                                        cursorColor: Colors.black,
+                                        decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Phone Number'
+                                        ),
+                                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                                        onChanged: _validatePhoneNumber,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            Container(
+                              height: _phoneNumberErrMsg.isEmpty ? 0: null,
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 6, left: 16),
+                                child: Text(
+                                  _phoneNumberErrMsg,
+                                  style: const TextStyle(
+                                    color: kColorPrimary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const  SizedBox(height: 15,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kColorPrimary.withOpacity(0.2),
+                                blurRadius: 1,
+                                offset: const Offset(
+                                    0.0,
+                                    3
+                                ),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(5),
                           ),
+                        ),
+                        TextFormField(
+                          cursorColor: Colors.black,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            hintText: 'Email',
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: _validateEmail,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const  SizedBox(height: 15,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kColorPrimary.withOpacity(0.2),
+                                blurRadius: 1,
+                                offset: const Offset(
+                                    0.0,
+                                    3
+                                ),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: Colors.black,
+                          obscureText: _showPassword ? false : true,
+                          decoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            border: const OutlineInputBorder(),
+                            focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            hintText: 'Password',
+                            suffix: GestureDetector(
+                              onTap: () => setState(() => _showPassword = !_showPassword),
+                              child: Text(
+                                _showPassword ? 'Hide' : 'Show',
+                              ),
+                            ),
+                            suffixStyle: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: _validatePassword,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const  SizedBox(height: 15,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kColorPrimary.withOpacity(0.2),
+                                blurRadius: 1,
+                                offset: const Offset(
+                                    0.0,
+                                    3
+                                ),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        TextFormField(
+                          cursorColor: Colors.black,
+                          obscureText: _showPassword ? false : true,
+                          decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                            ),
+                            hintText: 'Confirm Password',
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: _validateConfirmPassword,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const  SizedBox(height: 15,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 58,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: kColorPrimary.withOpacity(0.2),
+                                blurRadius: 1,
+                                offset: const Offset(
+                                    0.0,
+                                    3
+                                ),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              alignment: Alignment.center,
+                              height: 58,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    hint: const Text('Select City'),
+                                    isExpanded: true,
+                                    value: _selectedCity,
+                                    onChanged: (selectedVal) {
+                                      setState(() {
+                                        _selectedCity = selectedVal;
+                                        _cityErrMsg = '';
+                                      });
+                                    },
+                                    items: _dropdownItems.map((String items) {
+                                      return DropdownMenuItem<String>(
+                                        value: items,
+                                        child: Text(items),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              height: _cityErrMsg.isEmpty ? 0: null,
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 6, left: 16),
+                                child: Text(
+                                  _cityErrMsg,
+                                  style: const TextStyle(
+                                    color: kColorPrimary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -495,6 +629,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 20,),
                 ]),
               ),
             ],

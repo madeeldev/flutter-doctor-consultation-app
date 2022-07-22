@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/screens/auth/signup_page.dart';
@@ -21,19 +20,19 @@ class _LoginPageState extends State<LoginPage> {
   String _phoneNumberErrMsg = '';
 
   // controllers
-  final _phoneNumberCtrl = TextEditingController();
+  final _phoneNumberCtrl = TextEditingController(text: '3007918427');
 
   // show password
   bool _showPassword = false;
 
-  // bottom SizedBox heights
-  double _passwordBottom = 15;
+  // node
+  final _phoneNumberNode = FocusNode();
 
   // validators
   _validatePhoneNumber(String? val) {
     setState(() {
       if(val != null && val.isNotEmpty) {
-        if(!RegExp(r'^[a-z]+$').hasMatch(val)) {
+        if(RegExp(r'^[0-9]*$').hasMatch(val)) {
           if(val.length == 10) {
             _phoneNumberErrMsg = '';
           } else {
@@ -49,20 +48,11 @@ class _LoginPageState extends State<LoginPage> {
   }
   String? _validatePassword (String? val){
     if(val == null || val.isEmpty) {
-      SchedulerBinding.instance.addPostFrameCallback((duration) {
-        setState(() => _passwordBottom = 5);
-      });
       return 'Password is required';
     }
     if(val.length < 4) {
-      SchedulerBinding.instance.addPostFrameCallback((duration) {
-        setState(() => _passwordBottom = 5);
-      });
-      return 'Password must be at least 5 characters long!';
+      return 'Password must be at least 5 characters long';
     }
-    SchedulerBinding.instance.addPostFrameCallback((duration) {
-      setState(() => _passwordBottom = 15);
-    });
     return null;
   }
 
@@ -108,87 +98,112 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
+                      child: Stack(
                         children: [
                           Container(
-                            alignment: Alignment.center,
-                            height: size.height * 0.07,
-                            width: double.infinity,
+                            height: 60,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
-                            ),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        alignment: Alignment.center,
-                                        padding: const EdgeInsets.only(bottom: 1),
-                                        child: Text(
-                                          '+',
-                                          style: TextStyle(
-                                              color: Colors.black.withOpacity(0.7),
-                                              fontSize: size.width*0.040,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '92',
-                                        style: TextStyle(
-                                          color: Colors.black.withOpacity(0.7),
-                                          fontSize: size.width*0.040,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: 1.5,
-                                  height: size.height * 0.04,
-                                  color: Colors.grey,
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                                    child: TextFormField(
-                                      controller: _phoneNumberCtrl,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(10),
-                                      ],
-                                      cursorColor: Colors.black,
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'Phone Number'
-                                      ),
-                                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                                      onChanged: _validatePhoneNumber,
-                                    ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(
+                                      0.0,
+                                      3
                                   ),
                                 ),
                               ],
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
-                          Container(
-                            height: _phoneNumberErrMsg.isEmpty ? 0: null,
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 6, left: 16),
-                              child: Text(
-                                _phoneNumberErrMsg,
-                                style: const TextStyle(
-                                  color: kColorPrimary,
-                                  fontSize: 12,
+                          Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: 60,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          FocusScope.of(context).requestFocus(_phoneNumberNode);
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.only(bottom: 1),
+                                              child: Text(
+                                                '+',
+                                                style: TextStyle(
+                                                    color: kColorPrimary,
+                                                    fontSize: size.width*0.038,
+                                                    fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              '92',
+                                              style: TextStyle(
+                                                color: kColorPrimary,
+                                                fontSize: size.width*0.035,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 1,
+                                      color: kColorPrimary.withOpacity(0.5),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                        child: TextFormField(
+                                          focusNode: _phoneNumberNode,
+                                          controller: _phoneNumberCtrl,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(10),
+                                          ],
+                                          cursorColor: Colors.black,
+                                          decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                            hintText: 'Phone Number'
+                                          ),
+                                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                                          onChanged: _validatePhoneNumber,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
+                              Container(
+                                height: _phoneNumberErrMsg.isEmpty ? 0: null,
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 6, left: 16),
+                                  child: Text(
+                                    _phoneNumberErrMsg,
+                                    style: const TextStyle(
+                                      color: kColorPrimary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -196,32 +211,53 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 15,),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: TextFormField(
-                        cursorColor: Colors.black,
-                        obscureText: _showPassword ? false : true,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: kColorPrimary, width: 1),
-                          ),
-                          border: const OutlineInputBorder(),
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: kColorPrimary, width: 1),
-                          ),
-                          hintText: 'Password',
-                          suffix: GestureDetector(
-                            onTap: () => setState(() => _showPassword = !_showPassword),
-                            child: Text(
-                              _showPassword ? 'Hide' : 'Show',
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(
+                                      0.0,
+                                      3
+                                  ),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
-                          suffixStyle: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
+                          TextFormField(
+                            initialValue: 'Abc123',
+                            cursorColor: Colors.black,
+                            obscureText: _showPassword ? false : true,
+                            decoration: InputDecoration(
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              border: const OutlineInputBorder(),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              hintText: 'Password',
+                              suffix: GestureDetector(
+                                onTap: () => setState(() => _showPassword = !_showPassword),
+                                child: Text(
+                                  _showPassword ? 'Hide' : 'Show',
+                                ),
+                              ),
+                              suffixStyle: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: _validatePassword,
                           ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: size.height * 0.023),
-                        ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: _validatePassword,
+                        ],
                       ),
                     ),
                     const SizedBox(height: 15,),
@@ -278,6 +314,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                     ),
+                    const SizedBox(height: 20,),
                   ],
                 ),
               ),
@@ -331,6 +368,56 @@ class _LoginPageState extends State<LoginPage> {
         const SnackBar(content: Text('Submitting data..')),
       );
     }
+    //
+    _showBanner();
+  }
 
+  void _showBanner() => ScaffoldMessenger.of(context)
+    ..removeCurrentMaterialBanner()
+    ..showMaterialBanner(
+      MaterialBanner(
+        //padding: const EdgeInsets.all(16),
+        backgroundColor: kColorPrimary,
+        leading: Container(
+          height: 45,
+          width: 45,
+          decoration: const BoxDecoration(
+            color: Colors.black,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.signal_wifi_off, color: Colors.white,),
+        ),
+        leadingPadding: const EdgeInsets.only(right: 24),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              'You have lost connection to the internet.',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'This app is offline.',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+        contentTextStyle: const TextStyle(color: Colors.white),
+        actions: [
+          TextButton(
+              onPressed: _hideBanner,
+              child: const Text('DISMISS', style: TextStyle(color: Colors.white),),
+          ),
+          TextButton(
+            onPressed: _hideBanner,
+            child: const Text('TURN ON WIFI', style: TextStyle(color: Colors.white),),
+          ),
+        ],
+      )
+  );
+
+  void _hideBanner() {
+    ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
   }
 }
