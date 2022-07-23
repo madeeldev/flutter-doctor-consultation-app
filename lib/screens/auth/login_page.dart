@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/screens/auth/signup_page.dart';
+import 'package:flutter_hami/services/network_service.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants.dart';
 
@@ -66,6 +68,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    // check internet
+    NetworkStatus networkStatus = Provider.of<NetworkStatus>(context, listen: true);
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      debugPrint('Network Status: $networkStatus');
+      if(networkStatus == NetworkStatus.offline) {
+        _showBanner('No internet connection.');
+      } else {
+        _showBanner('Back online');
+      }
+    });
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: const Drawer(),
@@ -364,54 +376,37 @@ class _LoginPageState extends State<LoginPage> {
     bool formValidation = _loginFormKey.currentState!.validate();
     // if validated
     if (customValidation && formValidation) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Submitting data..')),
-      );
+      NetworkStatus networkStatus = Provider.of<NetworkStatus>(context, listen: false);
+      if(networkStatus == NetworkStatus.offline) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No internet connection')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Submitting data..')),
+        );
+      }
     }
-    //
-    _showBanner();
   }
 
-  void _showBanner() => ScaffoldMessenger.of(context)
+  void _showBanner(String contentText) => ScaffoldMessenger.of(context)
     ..removeCurrentMaterialBanner()
     ..showMaterialBanner(
       MaterialBanner(
-        //padding: const EdgeInsets.all(16),
-        backgroundColor: kColorPrimary,
-        leading: Container(
-          height: 45,
-          width: 45,
-          decoration: const BoxDecoration(
-            color: Colors.black,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.signal_wifi_off, color: Colors.white,),
-        ),
-        leadingPadding: const EdgeInsets.only(right: 24),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              'You have lost connection to the internet.',
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              'This app is offline.',
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+        elevation: 1,
+        backgroundColor: Colors.black87,
+        leadingPadding: const EdgeInsets.only(right: 12),
+        content: Text(
+          contentText,
+          overflow: TextOverflow.ellipsis,
+          // style: TextStyle(fontSize: 12),
         ),
         contentTextStyle: const TextStyle(color: Colors.white),
+        forceActionsBelow: true,
         actions: [
           TextButton(
               onPressed: _hideBanner,
-              child: const Text('DISMISS', style: TextStyle(color: Colors.white),),
-          ),
-          TextButton(
-            onPressed: _hideBanner,
-            child: const Text('TURN ON WIFI', style: TextStyle(color: Colors.white),),
+              child: const Text('Dismiss', style: TextStyle(color: Colors.white),),
           ),
         ],
       )
