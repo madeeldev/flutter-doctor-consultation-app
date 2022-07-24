@@ -1,11 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
+import 'package:flutter_hami/model/shared_preference.dart';
+import 'package:flutter_hami/model/user_model.dart';
 import 'package:flutter_hami/screens/auth/signup_page.dart';
-import 'package:flutter_hami/services/network_service.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_hami/screens/dashboard_page.dart';
+import 'package:flutter_hami/services/auth_service.dart';
+import 'package:flutter_hami/widget/connectivity_banner.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../constants.dart';
+import '../../widget/show_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -23,12 +31,35 @@ class _LoginPageState extends State<LoginPage> {
 
   // controllers
   final _phoneNumberCtrl = TextEditingController(text: '3007918427');
+  final _passwordCtrl = TextEditingController(text: 'abc123');
 
   // show password
   bool _showPassword = false;
 
   // node
   final _phoneNumberNode = FocusNode();
+
+  // has internet
+  late StreamSubscription internetSubscription;
+
+  @override
+  initState() {
+    internetSubscription = InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+      if(!hasInternet) {
+        connectivityBanner(context, 'No internet connection.', () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
+    //
+    super.initState();
+  }
+
+  // check internet
+  Future<bool> _hasInternetConnection() async {
+    return await InternetConnectionChecker().hasConnection;
+  }
 
   // validators
   _validatePhoneNumber(String? val) {
@@ -61,23 +92,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _phoneNumberCtrl.dispose();
+    _passwordCtrl.dispose();
+    internetSubscription.cancel();
     // TODO: implement dispose
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    // check internet
-    NetworkStatus networkStatus = Provider.of<NetworkStatus>(context, listen: true);
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      debugPrint('Network Status: $networkStatus');
-      if(networkStatus == NetworkStatus.offline) {
-        _showBanner('No internet connection.');
-      } else {
-        _showBanner('Back online');
-      }
-    });
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: const Drawer(),
@@ -110,114 +134,118 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: kColorPrimary.withOpacity(0.2),
-                                  blurRadius: 1,
-                                  offset: const Offset(
-                                      0.0,
-                                      3
+                      child: SizedBox(
+                        width: size.width,
+                        height: 60,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: kColorPrimary.withOpacity(0.2),
+                                    blurRadius: 1,
+                                    offset: const Offset(
+                                        0.0,
+                                        3
+                                    ),
                                   ),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(5),
+                                ],
+                                borderRadius: BorderRadius.circular(5),
+                              ),
                             ),
-                          ),
-                          Column(
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                height: 60,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          FocusScope.of(context).requestFocus(_phoneNumberNode);
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.only(bottom: 1),
-                                              child: Text(
-                                                '+',
-                                                style: TextStyle(
+                            Column(
+                              children: [
+                                Container(
+                                  alignment: Alignment.center,
+                                  height: 60,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            FocusScope.of(context).requestFocus(_phoneNumberNode);
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                padding: const EdgeInsets.only(bottom: 1),
+                                                child: Text(
+                                                  '+',
+                                                  style: TextStyle(
                                                     color: kColorPrimary,
                                                     fontSize: size.width*0.038,
                                                     fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Text(
-                                              '92',
-                                              style: TextStyle(
-                                                color: kColorPrimary,
-                                                fontSize: size.width*0.035,
-                                                fontWeight: FontWeight.bold,
-                                                letterSpacing: 0.5,
+                                              Text(
+                                                '92',
+                                                style: TextStyle(
+                                                  color: kColorPrimary,
+                                                  fontSize: size.width*0.035,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 0.5,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 1,
-                                      color: kColorPrimary.withOpacity(0.5),
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                                        child: TextFormField(
-                                          focusNode: _phoneNumberNode,
-                                          controller: _phoneNumberCtrl,
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: [
-                                            LengthLimitingTextInputFormatter(10),
-                                          ],
-                                          cursorColor: Colors.black,
-                                          decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'Phone Number'
+                                            ],
                                           ),
-                                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                                          onChanged: _validatePhoneNumber,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Container(
+                                        width: 1,
+                                        color: kColorPrimary.withOpacity(0.5),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                                          child: TextFormField(
+                                            focusNode: _phoneNumberNode,
+                                            controller: _phoneNumberCtrl,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(10),
+                                            ],
+                                            cursorColor: Colors.black,
+                                            decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                                hintText: 'Phone Number'
+                                            ),
+                                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                                            onChanged: _validatePhoneNumber,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: _phoneNumberErrMsg.isEmpty ? 0: null,
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 6, left: 16),
-                                  child: Text(
-                                    _phoneNumberErrMsg,
-                                    style: const TextStyle(
-                                      color: kColorPrimary,
-                                      fontSize: 12,
+                                Container(
+                                  height: _phoneNumberErrMsg.isEmpty ? 0: null,
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 6, left: 16),
+                                    child: Text(
+                                      _phoneNumberErrMsg,
+                                      style: const TextStyle(
+                                        color: kColorPrimary,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 15,),
@@ -243,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           TextFormField(
-                            initialValue: 'Abc123',
+                            controller: _passwordCtrl,
                             cursorColor: Colors.black,
                             obscureText: _showPassword ? false : true,
                             decoration: InputDecoration(
@@ -290,7 +318,7 @@ class _LoginPageState extends State<LoginPage> {
                         color: kColorPrimary,
                         borderRadius: BorderRadius.circular(2),
                         child: InkWell(
-                          onTap: _handleLogin,
+                          onTap: _onPressedLogin,
                           child: Container(
                             alignment: Alignment.center,
                             width: double.infinity,
@@ -298,9 +326,9 @@ class _LoginPageState extends State<LoginPage> {
                             child: Text(
                               'Login',
                               style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: size.width * 0.045,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: size.width * 0.045,
                               ),
                             ),
                           ),
@@ -311,20 +339,20 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: SizedBox(
-                          width: size.width * 0.8,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('Don\'t have an account ? ', style: TextStyle(fontSize: 13, color: Color(0xff2d2d2d), fontWeight: FontWeight.bold),),
-                              GestureDetector(
-                                onTap: () => {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()))
-                                },
-                                child: const Text('Sign-up', style: TextStyle(fontSize: 15, color: kColorPrimary, fontWeight: FontWeight.bold),),
-                              ),
-                            ],
-                          ),
+                        width: size.width * 0.8,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('Don\'t have an account ? ', style: TextStyle(fontSize: 13, color: Color(0xff2d2d2d), fontWeight: FontWeight.bold),),
+                            GestureDetector(
+                              onTap: () => {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()))
+                              },
+                              child: const Text('Sign-up', style: TextStyle(fontSize: 15, color: kColorPrimary, fontWeight: FontWeight.bold),),
+                            ),
+                          ],
                         ),
+                      ),
                     ),
                     const SizedBox(height: 20,),
                   ],
@@ -354,65 +382,71 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     }
-    // // password
-    // if(_passwordCtrl.value.text.isEmpty) {
-    //   // required
-    //   return false;
-    // } else {
-    //   // invalid length
-    //   if(_passwordCtrl.value.text.length < 4) {
-    //     return false;
-    //   }
-    // }
     return true;
   }
 
-  _handleLogin() {
-
-    // custom form error messages
+  _onPressedLogin() {
+    // custom inputs error messages
     _validatePhoneNumber(_phoneNumberCtrl.value.text);
-    //
+    // forms validate
     bool customValidation = _customValidateForm();
     bool formValidation = _loginFormKey.currentState!.validate();
     // if validated
     if (customValidation && formValidation) {
-      NetworkStatus networkStatus = Provider.of<NetworkStatus>(context, listen: false);
-      if(networkStatus == NetworkStatus.offline) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No internet connection')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Submitting data..')),
-        );
-      }
+      showDialogBox(context);
+      _onPostLogin().then((res) {
+        final String message = res['message'] ?? 'Error occurred';
+        if(message == 'Success!') {
+          _onDoneLogin();
+        } else {
+          Navigator.pop(context);
+          Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_SHORT,
+          );
+        }
+      });
     }
   }
 
-  void _showBanner(String contentText) => ScaffoldMessenger.of(context)
-    ..removeCurrentMaterialBanner()
-    ..showMaterialBanner(
-      MaterialBanner(
-        elevation: 1,
-        backgroundColor: Colors.black87,
-        leadingPadding: const EdgeInsets.only(right: 12),
-        content: Text(
-          contentText,
-          overflow: TextOverflow.ellipsis,
-          // style: TextStyle(fontSize: 12),
-        ),
-        contentTextStyle: const TextStyle(color: Colors.white),
-        forceActionsBelow: true,
-        actions: [
-          TextButton(
-              onPressed: _hideBanner,
-              child: const Text('Dismiss', style: TextStyle(color: Colors.white),),
-          ),
-        ],
-      )
-  );
-
-  void _hideBanner() {
-    ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  Future<Map<String, String>> _onPostLogin() async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if(hasInternet) {
+      final mobile = '92${_phoneNumberCtrl.value.text}';
+      final password = _passwordCtrl.value.text;
+      final user = UserModel(
+        userMobile: mobile,
+        userPassword: password,
+      );
+      final res = await AuthService().onPostLogin(user);
+      return {
+        'message' : res,
+      };
+    } else {
+      return {
+        'message' : 'No internet connection',
+      };
+    }
   }
+
+  _onDoneLogin() {
+    final mobile = '92${_phoneNumberCtrl.value.text}';
+    SharedPreference().saveUserMobile(mobile).then((_) {
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: 'Welcome, you have successfully logged in',
+        toastLength: Toast.LENGTH_SHORT,
+      );
+      // dashboard
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => DashboardPage(
+            mobile: mobile,
+          ),
+        ), (Route<dynamic> route) => false,
+      );
+    });
+  }
+
 }

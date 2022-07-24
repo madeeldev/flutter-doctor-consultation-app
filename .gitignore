@@ -46,3 +46,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 lib/config.dart
+lib/services/auth_service.dart

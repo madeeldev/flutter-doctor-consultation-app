@@ -1,10 +1,26 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
+import 'package:flutter_hami/screens/auth/verify_pin_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../colors.dart';
 import '../../constants.dart';
+import 'package:flutter_hami/config.dart';
+
+import '../../model/user_model.dart';
+import '../../services/auth_service.dart';
+import '../../widget/connectivity_banner.dart';
+import '../../widget/show_dialog.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -17,17 +33,19 @@ class _SignupPageState extends State<SignupPage> {
 
   final _signupFormKey = GlobalKey<FormState>();
 
-  final List<String> _dropdownItems = ['Lahore', 'Karachi'];
-  bool _isChecked = false;
+  List _dropdownItems = [];
+  bool _isChecked = true;
 
   // errorMessages
   String _phoneNumberErrMsg = '';
   String _cityErrMsg = '';
 
   // controllers
-  final _phoneNumberCtrl = TextEditingController();
-  final _passwordCtrl = TextEditingController();
-  final _confirmPassCtrl = TextEditingController();
+  final _nameCtrl = TextEditingController(text: 'Adeel');
+  final _phoneNumberCtrl = TextEditingController(text: '3007918427');
+  final _emailCtrl = TextEditingController(text: 'muhammad.adeel@highnoon.com.pk');
+  final _passwordCtrl = TextEditingController(text: 'abc123');
+  final _confirmPassCtrl = TextEditingController(text: 'abc123');
 
   // show password
   bool _showPassword = false;
@@ -37,6 +55,46 @@ class _SignupPageState extends State<SignupPage> {
 
   // node
   final _phoneNumberNode = FocusNode();
+
+  // has internet
+  late StreamSubscription internetSubscription;
+
+  @override
+  initState() {
+    internetSubscription = InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+      if(!hasInternet) {
+        connectivityBanner(context, 'No internet connection.',
+          () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner()
+        );
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
+    //
+    getCitiesData();
+    //
+    super.initState();
+  }
+
+  // check internet
+  Future<bool> _hasInternetConnection() async {
+    return await InternetConnectionChecker().hasConnection;
+  }
+
+  // get cities
+  Future getCitiesData() async {
+    try {
+      var res = await http.get(Uri.parse(Config.citiesUrl));
+      var resBody = json.decode(res.body);
+      final cities = resBody[Config.citiesResult];
+      setState(() {
+        _dropdownItems = cities;
+      });
+    } catch (e) {
+      debugPrint('Error occurred: $e');
+    }
+  }
 
   // validators
   String? _validateName(val){
@@ -84,7 +142,7 @@ class _SignupPageState extends State<SignupPage> {
     if(val == null || val.isEmpty) {
       return 'Confirm is required';
     }
-    if(_passwordCtrl.value.text != _confirmPassCtrl.value.text) {
+    if(_passwordCtrl.value.text != val) {
       return 'Confirmation password does not match';
     }
     return null;
@@ -101,9 +159,12 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   void dispose() {
+    _nameCtrl.dispose();
     _phoneNumberCtrl.dispose();
+    _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmPassCtrl.dispose();
+    internetSubscription.cancel();
     // TODO: implement dispose
     super.dispose();
   }
@@ -111,7 +172,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    //
     Color getColor(Set<MaterialState> states) {
       const Set<MaterialState> interactiveStates = <MaterialState>{
         MaterialState.pressed,
@@ -200,6 +261,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                         ),
                         TextFormField(
+                          controller: _nameCtrl,
                           cursorColor: Colors.black,
                           decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
@@ -353,6 +415,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                         ),
                         TextFormField(
+                          controller: _emailCtrl,
                           cursorColor: Colors.black,
                           keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
@@ -394,6 +457,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                         ),
                         TextFormField(
+                          controller: _passwordCtrl,
                           cursorColor: Colors.black,
                           obscureText: _showPassword ? false : true,
                           decoration: InputDecoration(
@@ -445,8 +509,9 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                         ),
                         TextFormField(
+                          controller: _confirmPassCtrl,
                           cursorColor: Colors.black,
-                          obscureText: _showPassword ? false : true,
+                          obscureText: true,
                           decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: kColorPrimary, width: 1),
@@ -508,10 +573,11 @@ class _SignupPageState extends State<SignupPage> {
                                         _cityErrMsg = '';
                                       });
                                     },
-                                    items: _dropdownItems.map((String items) {
-                                      return DropdownMenuItem<String>(
-                                        value: items,
-                                        child: Text(items),
+                                    // items: const [],
+                                    items: _dropdownItems.map((cityItem) {
+                                      return DropdownMenuItem(
+                                        value: cityItem['City_Code'].toString(),
+                                        child: Text(cityItem['City_Desc']),
                                       );
                                     }).toList(),
                                   ),
@@ -599,7 +665,7 @@ class _SignupPageState extends State<SignupPage> {
                       color: kColorPrimary,
                       borderRadius: BorderRadius.circular(2),
                       child: InkWell(
-                        onTap: _handleSignup,
+                        onTap: _onPressedSignup,
                         child: Container(
                           alignment: Alignment.center,
                           width: double.infinity,
@@ -663,27 +729,125 @@ class _SignupPageState extends State<SignupPage> {
     }
     return true;
   }
-
   //
-  _handleSignup() {
-    // custom form error messages
+  _onPressedSignup() {
+    // custom inputs error messages
     _validatePhoneNumber(_phoneNumberCtrl.value.text);
     _validateCity();
-    //
+    // forms validate
     bool customValidation = _customValidateForm();
     bool formValidation = _signupFormKey.currentState!.validate();
     // if validated
     if (customValidation && formValidation) {
       // check for term & conditions
       if(!_isChecked) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please tick the checkbox to accept our Customer Agreement')),
+        Fluttertoast.showToast(
+            msg: "Please tick the checkbox to accept our customer agreements",
+            toastLength: Toast.LENGTH_SHORT,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Submitting data..')),
-        );
+        showDialogBox(context);
+        _onVerifySignup().then((res) {
+          debugPrint('response is :$res');
+          final String message = res['message'] ?? 'Error occurred';
+          if (message == 'User found!') {
+            Navigator.pop(context);
+            Fluttertoast.showToast(
+              msg: 'User with this mobile already exist.',
+              toastLength: Toast.LENGTH_SHORT,
+            );
+          } else if(message == 'User not found!') {
+            _onPostSignup().then((postRes) {
+              final sendMessage = postRes['message'];
+              if(sendMessage == 'Success!') {
+                // create user
+                final randomPin = postRes['randomPin'];
+                UserModel user = UserModel(
+                  registrationPin: randomPin,
+                  userName: _nameCtrl.value.text,
+                  userMobile: _phoneNumberCtrl.value.text,
+                  userEmail: _emailCtrl.value.text,
+                  userPassword: _passwordCtrl.value.text,
+                  userCity: _selectedCity,
+                );
+                SharedPreference().saveUser(user).then((_) {
+                  Navigator.pop(context);
+                  Fluttertoast.showToast(
+                    msg: 'Check your text message on 92${_phoneNumberCtrl.text}',
+                    toastLength: Toast.LENGTH_LONG,
+                  );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const VerifyPinPage(),
+                    ),
+                  );
+                });
+              } else {
+                Navigator.pop(context);
+                Fluttertoast.showToast(
+                  msg: sendMessage,
+                  toastLength: Toast.LENGTH_SHORT,
+                );
+              }
+            });
+          } else {
+            Navigator.pop(context);
+            Fluttertoast.showToast(
+              msg: message,
+              toastLength: Toast.LENGTH_SHORT,
+            );
+          }
+        });
       }
     }
   }
+
+  Future<Map<String, String>> _onVerifySignup() async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if(hasInternet) {
+      final mobile = '92${_phoneNumberCtrl.value.text}';
+      final user = UserModel(
+        userMobile: mobile,
+      );
+      final res = await AuthService().onPostLogin(user, true);
+      return {
+        'message' : res,
+      };
+    }
+    return {
+      'message' : 'No internet connection',
+    };
+  }
+  //
+  Future<Map<String, dynamic>> _onPostSignup() async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if(hasInternet) {
+      final String randomPin = _getRandomPin().toString();
+      final String randomPinStr = 'Your%20PIN%20for%20HAMI%20App%20is%20$randomPin.';
+      final mobile = '92${_phoneNumberCtrl.value.text}';
+      String res = await AuthService().sendTextMessage(mobile, randomPinStr);
+      return {
+        'message': res,
+        'randomPin': randomPin
+      };
+    }
+    return {
+      'message' : 'No internet connection',
+    };
+  }
+  //
+  int _getRandomPin() {
+    var rnd = math.Random();
+    return rnd.nextInt(1000) + 1000;
+  }
+  //
+  _onDoneSignup() {}
 }
+
+// final name = '92${_nameCtrl.value.text}';
+// final mobile = '92${_phoneNumberCtrl.value.text}';
+// final email = '92${_emailCtrl.value.text}';
+// final password = _passwordCtrl.value.text;
+// final selectedCity = _selectedCity;
