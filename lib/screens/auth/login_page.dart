@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/model/user_model.dart';
+import 'package:flutter_hami/screens/auth/forgot_password_page.dart';
 import 'package:flutter_hami/screens/auth/signup_page.dart';
 import 'package:flutter_hami/screens/dashboard_page.dart';
 import 'package:flutter_hami/services/auth_service.dart';
@@ -98,49 +99,182 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  DateTime? _currentBackPressTime;
+
+  Future<bool> _onWillPop() async {
+    DateTime now = DateTime.now();
+    if (_currentBackPressTime == null ||
+        now.difference(_currentBackPressTime!) > const Duration(seconds: 2)) {
+      _currentBackPressTime = now;
+      Fluttertoast.showToast(
+        msg: 'Press back again to exit!',
+        toastLength: Toast.LENGTH_SHORT,
+      );
+      return Future.value(false);
+    } else {
+      Fluttertoast.cancel();
+      return Future.value(true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      drawer: const Drawer(),
-      appBar: PreferredSize(
-        preferredSize: Size.zero,
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,//ios status bar colors
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.white,//android status bar color
-            statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-            statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        drawer: const Drawer(),
+        appBar: PreferredSize(
+          preferredSize: Size.zero,
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white,//ios status bar colors
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: Colors.white,//android status bar color
+              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+              statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
+            ),
           ),
         ),
-      ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
-        child: SafeArea(
-          child: ListView(
-            children: [
-              Form(
-                key: _loginFormKey,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: size.height * 0.43,
-                      child: Image.asset('assets/images/hami_logo.png'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: SizedBox(
-                        width: size.width,
-                        height: 60,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: SafeArea(
+            child: ListView(
+              children: [
+                Form(
+                  key: _loginFormKey,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: size.height * 0.43,
+                        child: Image.asset('assets/images/hami_logo.png'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: SizedBox(
+                          width: size.width,
+                          height: 60,
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: kColorPrimary.withOpacity(0.2),
+                                      blurRadius: 1,
+                                      offset: const Offset(
+                                          0.0,
+                                          3
+                                      ),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    height: 60,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              FocusScope.of(context).requestFocus(_phoneNumberNode);
+                                            },
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  padding: const EdgeInsets.only(bottom: 1),
+                                                  child: Text(
+                                                    '+',
+                                                    style: TextStyle(
+                                                      color: kColorPrimary,
+                                                      fontSize: size.width*0.038,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '92',
+                                                  style: TextStyle(
+                                                    color: kColorPrimary,
+                                                    fontSize: size.width*0.035,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 0.5,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          width: 1,
+                                          color: kColorPrimary.withOpacity(0.5),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                                            child: TextFormField(
+                                              focusNode: _phoneNumberNode,
+                                              controller: _phoneNumberCtrl,
+                                              keyboardType: TextInputType.number,
+                                              inputFormatters: [
+                                                LengthLimitingTextInputFormatter(10),
+                                              ],
+                                              cursorColor: Colors.black,
+                                              decoration: const InputDecoration(
+                                                  border: InputBorder.none,
+                                                  hintText: 'Phone Number'
+                                              ),
+                                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                                              onChanged: _validatePhoneNumber,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: _phoneNumberErrMsg.isEmpty ? 0: null,
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 6, left: 16),
+                                      child: Text(
+                                        _phoneNumberErrMsg,
+                                        style: const TextStyle(
+                                          color: kColorPrimary,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15,),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Stack(
                           children: [
                             Container(
-                              height: 60,
+                              height: 58,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 boxShadow: [
@@ -156,209 +290,99 @@ class _LoginPageState extends State<LoginPage> {
                                 borderRadius: BorderRadius.circular(5),
                               ),
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  height: 60,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            FocusScope.of(context).requestFocus(_phoneNumberNode);
-                                          },
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                alignment: Alignment.center,
-                                                padding: const EdgeInsets.only(bottom: 1),
-                                                child: Text(
-                                                  '+',
-                                                  style: TextStyle(
-                                                    color: kColorPrimary,
-                                                    fontSize: size.width*0.038,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                '92',
-                                                style: TextStyle(
-                                                  color: kColorPrimary,
-                                                  fontSize: size.width*0.035,
-                                                  fontWeight: FontWeight.bold,
-                                                  letterSpacing: 0.5,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 1,
-                                        color: kColorPrimary.withOpacity(0.5),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                                          child: TextFormField(
-                                            focusNode: _phoneNumberNode,
-                                            controller: _phoneNumberCtrl,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              LengthLimitingTextInputFormatter(10),
-                                            ],
-                                            cursorColor: Colors.black,
-                                            decoration: const InputDecoration(
-                                                border: InputBorder.none,
-                                                hintText: 'Phone Number'
-                                            ),
-                                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                                            onChanged: _validatePhoneNumber,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                            TextFormField(
+                              controller: _passwordCtrl,
+                              cursorColor: Colors.black,
+                              obscureText: _showPassword ? false : true,
+                              decoration: InputDecoration(
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                ),
+                                border: const OutlineInputBorder(),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                ),
+                                hintText: 'Password',
+                                suffix: GestureDetector(
+                                  onTap: () => setState(() => _showPassword = !_showPassword),
+                                  child: Text(
+                                    _showPassword ? 'Hide' : 'Show',
                                   ),
                                 ),
-                                Container(
-                                  height: _phoneNumberErrMsg.isEmpty ? 0: null,
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 6, left: 16),
-                                    child: Text(
-                                      _phoneNumberErrMsg,
-                                      style: const TextStyle(
-                                        color: kColorPrimary,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
+                                suffixStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ],
+                              ),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: _validatePassword,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 15,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Stack(
-                        children: [
-                          Container(
-                            height: 58,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: kColorPrimary.withOpacity(0.2),
-                                  blurRadius: 1,
-                                  offset: const Offset(
-                                      0.0,
-                                      3
-                                  ),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(5),
+                      const SizedBox(height: 15,),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage(),),),
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(color: kColorPrimary, fontWeight: FontWeight.w600),
                             ),
                           ),
-                          TextFormField(
-                            controller: _passwordCtrl,
-                            cursorColor: Colors.black,
-                            obscureText: _showPassword ? false : true,
-                            decoration: InputDecoration(
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: kColorPrimary, width: 1),
-                              ),
-                              border: const OutlineInputBorder(),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(color: kColorPrimary, width: 1),
-                              ),
-                              hintText: 'Password',
-                              suffix: GestureDetector(
-                                onTap: () => setState(() => _showPassword = !_showPassword),
-                                child: Text(
-                                  _showPassword ? 'Hide' : 'Show',
+                        ),
+                      ),
+                      const SizedBox(height: 20,),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Material(
+                          color: kColorPrimary,
+                          borderRadius: BorderRadius.circular(2),
+                          child: InkWell(
+                            onTap: _onPressedLogin,
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: double.infinity,
+                              height: size.height * 0.065,
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: size.width * 0.045,
                                 ),
                               ),
-                              suffixStyle: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
-                            validator: _validatePassword,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: Container(
-                        alignment: Alignment.topRight,
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: kColorPrimary, fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Material(
-                        color: kColorPrimary,
-                        borderRadius: BorderRadius.circular(2),
-                        child: InkWell(
-                          onTap: _onPressedLogin,
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: double.infinity,
-                            height: size.height * 0.065,
-                            child: Text(
-                              'Login',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: size.width * 0.045,
-                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: size.width * 0.8,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('Don\'t have an account ? ', style: TextStyle(fontSize: 13, color: Color(0xff2d2d2d), fontWeight: FontWeight.bold),),
-                            GestureDetector(
-                              onTap: () => {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()))
-                              },
-                              child: const Text('Sign-up', style: TextStyle(fontSize: 15, color: kColorPrimary, fontWeight: FontWeight.bold),),
-                            ),
-                          ],
+                      const SizedBox(height: 20,),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SizedBox(
+                          width: size.width * 0.8,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Don\'t have an account ? ', style: TextStyle(fontSize: 13, color: Color(0xff2d2d2d), fontWeight: FontWeight.bold),),
+                              GestureDetector(
+                                onTap: () => {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()))
+                                },
+                                child: const Text('Sign-up', style: TextStyle(fontSize: 15, color: kColorPrimary, fontWeight: FontWeight.bold),),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20,),
-                  ],
+                      const SizedBox(height: 20,),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -419,7 +443,7 @@ class _LoginPageState extends State<LoginPage> {
         userMobile: mobile,
         userPassword: password,
       );
-      final res = await AuthService().onPostLogin(user);
+      final res = await AuthService().onVerifyUser(user);
       return {
         'message' : res,
       };

@@ -48,4 +48,15 @@ class SharedPreference {
     prefs.remove('userCity');
   }
 
+  Future<bool> saveRegistrationPin(String pin) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('registrationPin', pin);
+    return true;
+  }
+
+  Future<void> removeRegistrationPin() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('registrationPin');
+  }
+
 }

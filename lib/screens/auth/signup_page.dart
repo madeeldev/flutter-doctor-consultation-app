@@ -216,7 +216,13 @@ class _SignupPageState extends State<SignupPage> {
                     child: Row(
                       children: [
                         InkWell(
-                          onTap: () => Navigator.pop(context),
+                          onTap: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPage(),
+                              ), (Route<dynamic> route) => false,
+                            );
+                          },
                           child: const Icon(
                             Icons.arrow_back_ios,
                             size: 20,
@@ -747,8 +753,7 @@ class _SignupPageState extends State<SignupPage> {
         );
       } else {
         showDialogBox(context);
-        _onVerifySignup().then((res) {
-          debugPrint('response is :$res');
+        _onVerifyUser().then((res) {
           final String message = res['message'] ?? 'Error occurred';
           if (message == 'User found!') {
             Navigator.pop(context);
@@ -757,7 +762,7 @@ class _SignupPageState extends State<SignupPage> {
               toastLength: Toast.LENGTH_SHORT,
             );
           } else if(message == 'User not found!') {
-            _onPostSignup().then((postRes) {
+            _onSendVerificationCodeMessage().then((postRes) {
               final sendMessage = postRes['message'];
               if(sendMessage == 'Success!') {
                 // create user
@@ -765,7 +770,7 @@ class _SignupPageState extends State<SignupPage> {
                 UserModel user = UserModel(
                   registrationPin: randomPin,
                   userName: _nameCtrl.value.text,
-                  userMobile: _phoneNumberCtrl.value.text,
+                  userMobile: '92${_phoneNumberCtrl.value.text}',
                   userEmail: _emailCtrl.value.text,
                   userPassword: _passwordCtrl.value.text,
                   userCity: _selectedCity,
@@ -802,7 +807,7 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-  Future<Map<String, String>> _onVerifySignup() async {
+  Future<Map<String, String>> _onVerifyUser() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
     if(hasInternet) {
@@ -810,7 +815,7 @@ class _SignupPageState extends State<SignupPage> {
       final user = UserModel(
         userMobile: mobile,
       );
-      final res = await AuthService().onPostLogin(user, true);
+      final res = await AuthService().onVerifyUser(user, true);
       return {
         'message' : res,
       };
@@ -820,7 +825,7 @@ class _SignupPageState extends State<SignupPage> {
     };
   }
   //
-  Future<Map<String, dynamic>> _onPostSignup() async {
+  Future<Map<String, dynamic>> _onSendVerificationCodeMessage() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
     if(hasInternet) {
@@ -842,12 +847,5 @@ class _SignupPageState extends State<SignupPage> {
     var rnd = math.Random();
     return rnd.nextInt(1000) + 1000;
   }
-  //
-  _onDoneSignup() {}
 }
 
-// final name = '92${_nameCtrl.value.text}';
-// final mobile = '92${_phoneNumberCtrl.value.text}';
-// final email = '92${_emailCtrl.value.text}';
-// final password = _passwordCtrl.value.text;
-// final selectedCity = _selectedCity;
