@@ -3,16 +3,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
+import 'package:flutter_hami/screens/user/members_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   final String mobile;
   const DashboardPage({required this.mobile, Key? key}) : super(key: key);
 
   @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      // backgroundColor: const Color(0xfff5fbfd),
       drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.zero,
@@ -149,7 +154,7 @@ class DashboardPage extends StatelessWidget {
                         ),
                         child: InkWell(
                           borderRadius: const BorderRadius.all(Radius.circular(20)),
-                          onTap: () {},
+                          onTap: _onPressedMembers,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -370,7 +375,7 @@ class DashboardPage extends StatelessWidget {
                         ),
                         child: InkWell(
                           borderRadius: const BorderRadius.all(Radius.circular(20)),
-                          onTap: () {},
+                          onTap: _onPressedLogout,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
@@ -408,5 +413,21 @@ class DashboardPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  //
+  _onPressedMembers() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MembersPage(mobile: widget.mobile,),),);
+  }
+  //
+  _onPressedLogout() async {
+    await SharedPreference().removeUser().then((_) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ),
+            (Route<dynamic> route) => false,
+      );
+    });
   }
 }
