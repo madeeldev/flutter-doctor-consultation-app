@@ -5,9 +5,11 @@ import 'package:flutter_hami/screens/dashboard_page.dart';
 import 'package:flutter_hami/widget/animated_list_item.dart';
 import 'package:flutter_hami/widget/show_confirmation_alert.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 const kColorBg = Color(0xfff2f6fe);
 enum SlibableAction {delete, cancel}
+enum SelectGender { male, female, others }
 
 class MembersPage extends StatefulWidget {
   final String mobile;
@@ -21,7 +23,22 @@ class _MembersPageState extends State<MembersPage> {
 
   final _animatedListKey = GlobalKey<AnimatedListState>();
 
+  // errorMessages
+  String _nameErrMsg = '';
+  String _ageErrMsg = '';
+
+  // controllers
   final _searchMembersCtrl = TextEditingController();
+  final _nameCtrl = TextEditingController();
+  final _ageCtrl = TextEditingController();
+
+  // node
+  final _nameNode = FocusNode();
+
+  // select gender
+  SelectGender _gender = SelectGender.male;
+
+  // data
   final List _membersData = [
     {
       'idx': 1,
@@ -37,7 +54,7 @@ class _MembersPageState extends State<MembersPage> {
     },
     {
       'idx': 3,
-      'name': 'Sheroz Kamal',
+      'name': 'Shehroz Kamal',
       'gender': 'Male',
       'age': 29
     },
@@ -72,6 +89,31 @@ class _MembersPageState extends State<MembersPage> {
     // TODO: implement dispose
     super.dispose();
   }
+  
+  // validators
+  _validateName(String? textVal, setState) {
+    setState(() {
+      if(textVal != null && textVal.isNotEmpty) {
+        _nameErrMsg = '';
+      }else {
+        _nameErrMsg = 'Name field is required';
+      }
+    });
+  }
+  _validateAge(String? textVal, setState) {
+    setState(() {
+      if(textVal != null && textVal.isNotEmpty) {
+        // not a number
+        if(RegExp(r'^[a-z]+$').hasMatch(_ageCtrl.value.text)) {
+          _ageErrMsg = 'Age is not a valid number';
+        } else {
+          _ageErrMsg = '';
+        }
+      } else {
+        _ageErrMsg = 'Age field is required';
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +136,11 @@ class _MembersPageState extends State<MembersPage> {
               statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
             ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _onPressedFabBtn,
+          backgroundColor: kColorPrimary,
+          child: const Icon(Icons.add),
         ),
         body: ListView(
           children: [
@@ -142,6 +189,7 @@ class _MembersPageState extends State<MembersPage> {
                       padding: const EdgeInsets.only(left: 15, right: 15),
                       height: 44,
                       width: double.infinity,
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
@@ -151,10 +199,13 @@ class _MembersPageState extends State<MembersPage> {
                         ),
                       ),
                       child: TextFormField(
+                        textAlignVertical: TextAlignVertical.center,
                         controller: _searchMembersCtrl,
                         onChanged: (String? textVal) => setState(() => {}),
                         cursorColor: Colors.grey,
                         decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
                           border: InputBorder.none,
                           icon: Icon(Icons.search, color: Colors.grey.shade400,),
                           hintText: 'Search here',
@@ -237,7 +288,261 @@ class _MembersPageState extends State<MembersPage> {
     );
   }
 
-  _onDismissed(BuildContext context, int index, SlibableAction action) {
+  // custom validate form
+  bool _customValidateForm() {
+    // name
+    if(_nameCtrl.value.text.isEmpty) {
+      // required
+      return false;
+    }
+    // age
+    if(_ageCtrl.value.text.isEmpty) {
+      // required
+      return false;
+    } else {
+      // not a number
+      if(RegExp(r'^[a-z]+$').hasMatch(_ageCtrl.value.text)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  _onPressedFabBtn() {
+    _openDialogue();
+  }
+
+  _openDialogue() => showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        alignment: Alignment.bottomCenter,
+                        padding: const EdgeInsets.only(left: 24),
+                        height: 35,
+                        child: const Text('Add New Patient', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: InkWell(
+                          onTap: () {
+                            _nameCtrl.clear();
+                            _ageCtrl.clear();
+                            _nameErrMsg = '';
+                            _ageErrMsg = '';
+                            Navigator.of(context).pop();
+                          },
+                          child: const Icon(Icons.cancel, color: kColorPrimary,),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(15, 20.0, 15, 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                          height: 44,
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: Colors.grey, width: 0.5, style: BorderStyle.solid
+                            ),
+                          ),
+                          child: TextFormField(
+                            controller: _nameCtrl,
+                            cursorColor: Colors.grey,
+                            autocorrect: false,
+                            decoration: const InputDecoration(
+                                isDense: true,
+                                border: InputBorder.none,
+                                hintText: 'Name'
+                            ),
+                            onChanged: (String? val) => _validateName(val, setState),
+                          ),
+                        ),
+                        Container(
+                          height: _nameErrMsg.isEmpty ? 0: null,
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 6, left: 16),
+                            child: Text(
+                              _nameErrMsg,
+                              style: const TextStyle(
+                                color: kColorPrimary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10,),
+                        Container(
+                          height: 44,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: Colors.grey, width: 0.5, style: BorderStyle.solid
+                            ),
+                          ),
+                          child: TextFormField(
+                            controller: _ageCtrl,
+                            cursorColor: Colors.grey,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                                isDense: true,
+                                border: InputBorder.none,
+                                hintText: 'Age'
+                            ),
+                            onChanged: (String? val) => _validateAge(val, setState),
+                          ),
+                        ),
+                        Container(
+                          height: _ageErrMsg.isEmpty ? 0: null,
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 6, left: 16),
+                            child: Text(
+                              _ageErrMsg,
+                              style: const TextStyle(
+                                color: kColorPrimary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 5,),
+                        Container(
+                          height: 40,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 30,
+                                      child: Radio(
+                                          value: SelectGender.male,
+                                          groupValue: _gender,
+                                          onChanged: (SelectGender? value) {
+                                            setState(() => _gender = value!);
+                                          }
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() => _gender = SelectGender.male);
+                                        },
+                                        child: const Text(
+                                          'Male',
+                                          style: TextStyle(fontSize: 13),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 12,),
+                              Expanded(
+                                flex: 3,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 30,
+                                      child: Radio(
+                                          value: SelectGender.female,
+                                          groupValue: _gender,
+                                          onChanged: (SelectGender? value) {
+                                            setState(() => _gender = value!);
+                                          }
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() => _gender = SelectGender.female);
+                                        },
+                                        child: const Text(
+                                          'Female',
+                                          style: TextStyle(fontSize: 13),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 44,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          margin: const EdgeInsets.all(8.0),
+                          child: TextButton(
+                            child: const Text("Save", style: TextStyle(color: Colors.white),),
+                            onPressed: () {
+                              // custom inputs error messages
+                              _validateName(_nameCtrl.value.text, setState);
+                              _validateAge(_ageCtrl.value.text, setState);
+                              // form validate
+                              bool customValidation = _customValidateForm();
+                              if (customValidation) {
+                                const newIndex = 0;
+                                final newItem = {
+                                  'idx': _membersData.length+1,
+                                  'name': _nameCtrl.value.text,
+                                  'age': _ageCtrl.value.text,
+                                  'gender': _gender==SelectGender.male ? 'male':'female',
+                                };
+                                _membersData.insert(newIndex, newItem);
+                                _animatedListKey.currentState!.insertItem(
+                                  newIndex,
+                                );
+                                Fluttertoast.showToast(
+                                  msg: 'New patient added successfully',
+                                  toastLength: Toast.LENGTH_LONG,
+                                );
+                                _nameCtrl.clear();
+                                _ageCtrl.clear();
+                                Navigator.of(context).pop();
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+      )
+  );
+
+  _onDismissed(context, int index, SlibableAction action) {
     //debugPrint('removing $index');
     switch(action) {
       case SlibableAction.cancel:
@@ -268,6 +573,5 @@ class _MembersPageState extends State<MembersPage> {
       index,
       (context, animation) => AnimatedListItem(item: removedItem, animation: animation),
     );
-    // setState(() => _membersData.removeAt(index));
   }
 }
