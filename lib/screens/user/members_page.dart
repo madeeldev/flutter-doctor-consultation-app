@@ -43,37 +43,43 @@ class _MembersPageState extends State<MembersPage> {
     {
       'idx': 1,
       'name': 'Adeel Safdar',
-      'gender': 'Male',
+      'gender': 'male',
       'age': 25
     },
     {
       'idx': 2,
       'name': 'Muhammad Anas',
-      'gender': 'Male',
+      'gender': 'male',
       'age': 35
     },
     {
       'idx': 3,
       'name': 'Shehroz Kamal',
-      'gender': 'Male',
+      'gender': 'male',
       'age': 29
     },
     {
       'idx': 4,
       'name': 'Raja Bilal Nazir',
-      'gender': 'Male',
+      'gender': 'male',
       'age': 28
     },
     {
       'idx': 5,
       'name': 'Sajid Mehmood',
-      'gender': 'Male',
+      'gender': 'male',
       'age': 27
     },
     {
       'idx': 6,
       'name': 'Khawaja Wajih Ur Rehman',
-      'gender': 'Male',
+      'gender': 'male',
+      'age': 35
+    },
+    {
+      'idx': 7,
+      'name': 'Rida Zara',
+      'gender': 'female',
       'age': 35
     }
   ];

@@ -4,6 +4,7 @@ import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
 import 'package:flutter_hami/screens/user/members_page.dart';
+import 'package:flutter_hami/screens/user/record_page.dart';
 
 class DashboardPage extends StatefulWidget {
   final String mobile;
@@ -193,7 +194,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                         child: InkWell(
                           borderRadius: const BorderRadius.all(Radius.circular(20)),
-                          onTap: () {},
+                          onTap: _onPressedRecord,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -418,6 +419,10 @@ class _DashboardPageState extends State<DashboardPage> {
   //
   _onPressedMembers() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MembersPage(mobile: widget.mobile,),),);
+  }
+  //
+  _onPressedRecord() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => RecordPage(mobile: widget.mobile,),),);
   }
   //
   _onPressedLogout() async {

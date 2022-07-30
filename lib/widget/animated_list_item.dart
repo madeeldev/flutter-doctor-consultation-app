@@ -31,9 +31,10 @@ class AnimatedListItem extends StatelessWidget {
               height: 35,
               width: 35,
               decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle
+                color: Colors.red,
+                shape: BoxShape.circle
               ),
+              child: Icon(item['gender'] == 'male' ? Icons.male : Icons.female, color: Colors.white,),
             ),
             const SizedBox(width: 10,),
             Expanded(
@@ -70,6 +71,9 @@ class AnimatedListItem extends StatelessWidget {
                   )
                 ],
               ),
+            ),
+            const SizedBox(
+              child: Icon(Icons.swipe),
             ),
           ],
         ),
