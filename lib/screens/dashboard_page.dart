@@ -5,6 +5,7 @@ import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
 import 'package:flutter_hami/screens/user/members_page.dart';
 import 'package:flutter_hami/screens/user/record_page.dart';
+import 'package:badges/badges.dart';
 
 class DashboardPage extends StatefulWidget {
   final String mobile;
@@ -53,32 +54,37 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: InkWell(
                       onTap: () {},
                       borderRadius: BorderRadius.circular(10),
-                      child: SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: Stack(
-                          children: [
-                            const Center(child: Icon(Icons.notifications_none_outlined, size: 30,)),
-                            Positioned(
-                              top: 12,
-                              right: 10,
-                              child: Container(
-                                padding: const EdgeInsets.all(1),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
+                      child: Badge(
+                        badgeContent: const Text('3'),
+                        animationType: BadgeAnimationType.scale,
+                        badgeColor: Colors.orange,
+                        child: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: Stack(
+                            children: [
+                              const Center(child: Icon(Icons.notifications_none_outlined, size: 30,)),
+                              Positioned(
+                                top: 12,
+                                right: 10,
                                 child: Container(
-                                  height: 7,
-                                  width: 7,
+                                  padding: const EdgeInsets.all(1),
                                   decoration: const BoxDecoration(
-                                    color: Colors.red,
+                                    color: Colors.white,
                                     shape: BoxShape.circle,
+                                  ),
+                                  child: Container(
+                                    height: 7,
+                                    width: 7,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
