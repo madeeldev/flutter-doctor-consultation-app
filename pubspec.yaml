@@ -43,6 +43,8 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_slidable: ^2.0.0
   badges: ^2.0.3
+  flutter_datetime_picker: ^1.5.1
+  intl: ^0.17.0
 
 
 dev_dependencies:

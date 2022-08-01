@@ -55,9 +55,9 @@ class _DashboardPageState extends State<DashboardPage> {
                       onTap: () {},
                       borderRadius: BorderRadius.circular(10),
                       child: Badge(
-                        badgeContent: const Text('3'),
+                        badgeContent: const Text('3', style: TextStyle(color: Colors.black),),
                         animationType: BadgeAnimationType.scale,
-                        badgeColor: Colors.orange,
+                        badgeColor: Colors.greenAccent,
                         child: SizedBox(
                           height: 40,
                           width: 40,
@@ -74,8 +74,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Container(
-                                    height: 7,
-                                    width: 7,
+                                    height: 6,
+                                    width: 6,
                                     decoration: const BoxDecoration(
                                       color: Colors.red,
                                       shape: BoxShape.circle,
