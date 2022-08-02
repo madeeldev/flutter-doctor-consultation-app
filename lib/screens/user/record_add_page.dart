@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/services/member_service.dart';
 import 'package:flutter_hami/widget/connectivity_banner.dart';
+import 'package:flutter_hami/widget/show_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_hami/screens/user/record_page.dart';
@@ -49,15 +51,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
   final _dateTimeCtrl = TextEditingController();
 
   // data
-  final List _membersData = [
-    {'idx': 1, 'name': 'Adeel Safdar', 'gender': 'male', 'age': 25},
-    {'idx': 2, 'name': 'Muhammad Anas', 'gender': 'male', 'age': 35},
-    {'idx': 3, 'name': 'Sher Kamal', 'gender': 'male', 'age': 29},
-    {'idx': 4, 'name': 'Raja Bilal Nair', 'gender': 'male', 'age': 28},
-    {'idx': 5, 'name': 'Sajid Method', 'gender': 'male', 'age': 27},
-    {'idx': 6, 'name': 'Khadija Wait Ur Rahman', 'gender': 'male', 'age': 35},
-    {'idx': 7, 'name': 'Rid Zara', 'gender': 'female', 'age': 35}
-  ];
+  List<dynamic> _membersData = [];
 
   final List<String> _measurementScale = [
     'Before Breakfast',
@@ -70,6 +64,9 @@ class _RecordAddPageState extends State<RecordAddPage> {
     'Random',
   ];
 
+  // check if page is loaded
+  bool _isPageLoaded = false;
+
   // has internet
   late StreamSubscription internetSubscription;
 
@@ -81,10 +78,10 @@ class _RecordAddPageState extends State<RecordAddPage> {
         connectivityBanner(context, 'No internet connection.', () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
       } else {
         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+        _loadMembersData();
       }
     });
     //
-    _selectMember = widget.memberId;
     _selectMeasurement = _measurementScale[0];
     final time = DateFormat('hh:mm a').format(_dateTime);
     _dateTimeCtrl.text = '${_dateTime.year}-${_dateTime.month}-${_dateTime.day} $time';
@@ -103,9 +100,24 @@ class _RecordAddPageState extends State<RecordAddPage> {
     final hasInternet = await _hasInternetConnection();
     if(hasInternet) {
       final membersData = await MemberService().onLoadMembers(widget.mobile);
-      debugPrint('Loaded data: ${membersData.toString()}');
+      final message = membersData['message'];
+      if(message == 'success') {
+        setState(() {
+          _selectMember = widget.memberId;
+          _membersData = membersData['data'];
+          _isPageLoaded = true;
+        });
+      } else {
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_LONG,
+        );
+      }
     } else {
-
+      Fluttertoast.showToast(
+        msg: 'No internet connection',
+        toastLength: Toast.LENGTH_LONG,
+      );
     }
   }
 
@@ -140,12 +152,11 @@ class _RecordAddPageState extends State<RecordAddPage> {
             systemOverlayStyle: const SystemUiOverlayStyle(
               statusBarColor: kColorBg, //android status bar color
               statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-              statusBarIconBrightness:
-                  Brightness.dark, // For Android: (dark icons)
+              statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
             ),
           ),
         ),
-        body: Column(
+        body: _isPageLoaded ? Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
@@ -214,13 +225,13 @@ class _RecordAddPageState extends State<RecordAddPage> {
                         ),
                         items: _membersData.map((item) {
                           return DropdownMenuItem(
-                            value: item['idx'].toString(),
+                            value: item['HP_ID'].toString(),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Expanded(
                                   child: Text(
-                                    item['name'],
+                                    item['HP_Name'],
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -650,7 +661,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
               ),
             ),
           ],
-        ),
+        ) : const Center(child: CircularProgressIndicator()),
       ),
     );
   }
@@ -686,8 +697,62 @@ class _RecordAddPageState extends State<RecordAddPage> {
         initialTime: TimeOfDay(hour: _dateTime.hour, minute: _dateTime.minute),
       );
   //
-  _onPressedSaveRecord() {
+  _onPressedSaveRecord() async {
     bool formValidation = _addRecordFormKey.currentState!.validate();
-    if (formValidation) {}
+    if (formValidation) {
+      showDialogBox(context);
+      final message = await _onPostSaveRecord();
+      _onDoneSaveRecord(message);
+    }
+  }
+  //
+  _onPostSaveRecord() async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if(hasInternet) {
+      final time = DateFormat('hh:mm a').format(_dateTime);
+      Map<String, String> recordMap = {
+        "HPD_HP_ID": _selectMember!,
+        "HPD_Date": '${_dateTime.year}-${_dateTime.month}-${_dateTime.day}',
+        "HPD_DateTime": '${_dateTime.year}-${_dateTime.month}-${_dateTime.day} $time',
+        "HPD_SBP": _sBPCtrl.text,
+        "HPD_DBP": _dBPCtrl.text,
+        "HPD_HeartRate": _heartRateCtrl.text,
+        "HPD_Medication": (_medication == SelectMedication.yes) ? 'Yes' : 'No',
+        "HPD_BloodGlucose": _bloodGlucoseCtrl.text,
+        "HPD_GlucoseMeasured": _selectMeasurement!,
+        "HPD_Height": _heightCtrl.text,
+        "HPD_BMI": '21.5',
+        "HPD_Type": 'all',
+      };
+      final message = await MemberService().onSaveMemberRecord(recordMap);
+      return message;
+    } else {
+      return 'No internet connection';
+    }
+  }
+  //
+  _onDoneSaveRecord(String message) {
+    if(message == 'Successful') {
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: 'Member record has been added successfully',
+        toastLength: Toast.LENGTH_SHORT,
+      );
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => RecordPage(
+            mobile: widget.mobile,
+            memberId: _selectMember,
+          ),
+        ), (Route<dynamic> route) => false,
+      );
+    } else {
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
   }
 }
