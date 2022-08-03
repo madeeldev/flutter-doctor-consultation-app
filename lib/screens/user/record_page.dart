@@ -287,8 +287,9 @@ class _RecordPageState extends State<RecordPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Thursday, 03/22/2019',
-                            //DateFormat('dd/MM/yyyy hh:mm a').format(DateTime.parse(record['HPD_DateTime'])).toString(),
+                            DateFormat('EEEE, MM/dd/yyyy hh:mm a')
+                                .format(DateTime.parse(record['HPD_DateTime']))
+                                .toString(),
                             style: TextStyle(
                               color: Colors.black.withOpacity(0.8),
                             ),
@@ -388,11 +389,11 @@ class _RecordPageState extends State<RecordPage> {
                                             'SBP: ',
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1.0',
+                                              record['HPD_SBP'].toString(),
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -414,11 +415,11 @@ class _RecordPageState extends State<RecordPage> {
                                             'DBP: ',
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1.0',
+                                              record['HPD_DBP'].toString(),
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -450,11 +451,12 @@ class _RecordPageState extends State<RecordPage> {
                                             'Heart Rate: ',
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1.0',
+                                              record['HPD_HeartRate']
+                                                  .toString(),
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -476,11 +478,12 @@ class _RecordPageState extends State<RecordPage> {
                                             'Medication: ',
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              'Yes',
+                                              record['HPD_Medication']
+                                                  .toString(),
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -521,10 +524,10 @@ class _RecordPageState extends State<RecordPage> {
                                             width: 8,
                                           ),
                                           const Text('Level: '),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1.0 mg/dl',
-                                              style: TextStyle(
+                                              '${record['HPD_BloodGlucose'].toString()} mg/dl',
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -543,11 +546,13 @@ class _RecordPageState extends State<RecordPage> {
                                           const SizedBox(
                                             width: 5,
                                           ),
-                                          const Expanded(
-                                              child: Text(
-                                            'Before Breakfast',
-                                            overflow: TextOverflow.ellipsis,
-                                          )),
+                                          Expanded(
+                                            child: Text(
+                                              record['HPD_GlucoseMeasured']
+                                                  .toString(),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -581,10 +586,10 @@ class _RecordPageState extends State<RecordPage> {
                                             width: 5,
                                           ),
                                           const Text('Height: '),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1.0 cm',
-                                              style: TextStyle(
+                                              '${record['HPD_Height'].toString()} ft',
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -604,11 +609,12 @@ class _RecordPageState extends State<RecordPage> {
                                             width: 5,
                                           ),
                                           const Text('Weight: '),
-                                          const Expanded(
-                                              child: Text(
-                                            '1.0 kg',
-                                            overflow: TextOverflow.ellipsis,
-                                          )),
+                                          Expanded(
+                                            child: Text(
+                                              '${record['HPD_Weight'].toString()} kg',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -633,10 +639,10 @@ class _RecordPageState extends State<RecordPage> {
                                             width: 5,
                                           ),
                                           const Text('Waist: '),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1.0 in',
-                                              style: TextStyle(
+                                              '${record['HPD_Waist'].toString()} in',
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -657,7 +663,9 @@ class _RecordPageState extends State<RecordPage> {
                                           const SizedBox(
                                             width: 10,
                                           ),
-                                          const Text('Obesity'),
+                                          Text(
+                                            _bmiResult(record['HPD_BMI']),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -684,10 +692,10 @@ class _RecordPageState extends State<RecordPage> {
                                             width: 5,
                                           ),
                                           const Text('Body Mass Index (BMI): '),
-                                          const Expanded(
+                                          Expanded(
                                             child: Text(
-                                              '1000.0',
-                                              style: TextStyle(
+                                              record['HPD_BMI'].toString(),
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -727,6 +735,21 @@ class _RecordPageState extends State<RecordPage> {
     setState(() {
       _isPageDataLoaded = true;
     });
+  }
+
+  //
+  String _bmiResult(double bmi) {
+    String bmiResult = '';
+    if (bmi < 18.5) {
+      bmiResult = 'Underweight';
+    } else if (bmi >= 18.5 && bmi <= 24.9) {
+      bmiResult = 'Normal weight';
+    } else if (bmi >= 25 && bmi <= 29.9) {
+      bmiResult = 'Overweight';
+    } else {
+      bmiResult = 'Obesity';
+    }
+    return bmiResult;
   }
   //
 }

@@ -1,83 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hami/colors.dart';
 
 class AnimatedListItem extends StatelessWidget {
-  final Map<String,dynamic> item;
+  final Map<String, dynamic> item;
   final Animation<double> animation;
-  const AnimatedListItem({
-    required this.item,
-    required this.animation,
-    Key? key
-  }) : super(key: key);
+  const AnimatedListItem(
+      {required this.item, required this.animation, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => SizeTransition(
-    sizeFactor: animation,
-    child: buildItem(),
-  );
+        sizeFactor: animation,
+        child: buildItem(),
+      );
 
   Widget buildItem() => SizedBox(
-    height: 90,
-    child: Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          children: [
-            Container(
-              height: 35,
-              width: 35,
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle
-              ),
-              child: Icon(item['gender'] == 'male' ? Icons.male : Icons.female, color: Colors.white,),
-            ),
-            const SizedBox(width: 10,),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item['name'],
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
+        height: 90,
+        child: Card(
+          margin: EdgeInsets.zero,
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.white,
+                  backgroundImage: AssetImage(
+                    item['HP_Gender']
+                        ? 'assets/images/male.png'
+                        : 'assets/images/female.png',
                   ),
-                  const SizedBox(height: 2,),
-                  Row(
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item['gender'],
+                        item['HP_Name'],
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black87,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 5,),
-                      Text(
-                        '- ${item['age']} years old',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
+                      const SizedBox(
+                        height: 2,
                       ),
+                      Row(
+                        children: [
+                          Text(
+                            item['HP_Gender'] ? 'Male' : 'Female',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            '- ${item['HP_Age']} years old',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
+                  ),
+                ),
+                const SizedBox(
+                  child: Icon(Icons.swipe, color: kColorPrimary,),
+                ),
+              ],
             ),
-            const SizedBox(
-              child: Icon(Icons.swipe),
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
 }

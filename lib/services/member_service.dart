@@ -5,6 +5,24 @@ import 'package:flutter_hami/config.dart';
 import 'package:http/http.dart' as http;
 class MemberService {
 
+  Future<String> onSaveMember(Map<String, dynamic> member, String mobile) async {
+    try {
+      final postUrl = '${Config.saveMemberUrl}?mobile=$mobile&pName=${member['HP_Name']}&age=${member['HP_Age']}&gender=${member['HP_Gender']}&api_key=${Config.apiKey}';
+      final res = await http.get(Uri.parse(postUrl), headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      });
+      if (res.statusCode == 200) {
+        final result = json.decode(res.body)['hAMI_AP_Result'][0]['remarks'];
+        return result;
+      } else {
+        return 'Server error occurred';
+      }
+    } on SocketException catch (_) {
+      return 'Internet is not connected';
+    }
+  }
+
   Future<Map<String, dynamic>> onLoadMembers(String mobile) async {
     try {
       final postUrl = '${Config.getMembersUrl}?mobile=$mobile&api_key=${Config.apiKey}';
@@ -27,6 +45,24 @@ class MemberService {
       return {
         'message' : 'Internet is not connected',
       };
+    }
+  }
+  //
+  Future<String> onRemoveMember(int memberId) async {
+    try {
+      final postUrl = '${Config.removeMemberUrl}?pID=$memberId&api_key=${Config.apiKey}';
+      final res = await http.get(Uri.parse(postUrl), headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      });
+      if (res.statusCode == 200) {
+        final result = json.decode(res.body)['_HAMI_DP_Result'][0]['remarks'];
+        return result;
+      } else {
+        return 'Server error occurred';
+      }
+    } on SocketException catch (_) {
+      return 'Internet is not connected';
     }
   }
   //

@@ -64,6 +64,10 @@ class _RecordAddPageState extends State<RecordAddPage> {
     'Random',
   ];
 
+  //
+  double _calculatedBMI = 0.0;
+  String _resultBMI = '';
+
   // check if page is loaded
   bool _isPageLoaded = false;
 
@@ -490,7 +494,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
                                     color: Colors.grey, width: 1),
                               ),
                               hintText: 'Height',
-                              suffixText: 'cm',
+                              suffixText: 'ft',
                             ),
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -500,6 +504,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
                               }
                               return null;
                             },
+                            onChanged: (String val) => _computeBMI(),
                           ),
                           const SizedBox(
                             height: 10,
@@ -530,6 +535,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
                               }
                               return null;
                             },
+                            onChanged: (String val) => _computeBMI(),
                           ),
                           const SizedBox(
                             height: 10,
@@ -565,8 +571,8 @@ class _RecordAddPageState extends State<RecordAddPage> {
                             height: 15,
                           ),
                           Row(
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 'Compute BMI: ',
                                 style: TextStyle(
                                   fontSize: 13,
@@ -575,8 +581,8 @@ class _RecordAddPageState extends State<RecordAddPage> {
                               ),
                               Expanded(
                                 child: Text(
-                                  '21.5 Normal Weight',
-                                  style: TextStyle(
+                                  '$_calculatedBMI $_resultBMI',
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -722,7 +728,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
         "HPD_BloodGlucose": _bloodGlucoseCtrl.text,
         "HPD_GlucoseMeasured": _selectMeasurement!,
         "HPD_Height": _heightCtrl.text,
-        "HPD_BMI": '21.5',
+        "HPD_BMI": _calculatedBMI.toString(),
         "HPD_Type": 'all',
       };
       final message = await MemberService().onSaveMemberRecord(recordMap);
@@ -754,5 +760,33 @@ class _RecordAddPageState extends State<RecordAddPage> {
         toastLength: Toast.LENGTH_SHORT,
       );
     }
+  }
+  //
+  //
+  String _bmiResult(double bmi) {
+    String bmiResult = '';
+    if (bmi < 18.5) {
+      bmiResult = 'Underweight';
+    } else if (bmi >= 18.5 && bmi <= 24.9) {
+      bmiResult = 'Normal weight';
+    } else if (bmi >= 25 && bmi <= 29.9) {
+      bmiResult = 'Overweight';
+    } else {
+      bmiResult = 'Obesity';
+    }
+    return bmiResult;
+  }
+  //
+  _computeBMI() {
+    double weight = double.parse(_weightCtrl.text);//kg
+    double height = double.parse(_heightCtrl.text);//ft
+    height = height * 0.3048;// meters
+    height *= height;//meter square
+    double bmi = weight / height;
+    final result = _bmiResult(bmi);
+    setState(() {
+      _resultBMI = result;
+      _calculatedBMI = double.parse(bmi.toStringAsFixed(1));
+    });
   }
 }
