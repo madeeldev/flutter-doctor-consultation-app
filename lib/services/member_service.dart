@@ -114,4 +114,22 @@ class MemberService {
     }
   }
 
+  Future<String> onRemoveMemberRecord(String mobile, int recordId) async {
+    try {
+      final postUrl = '${Config.removeMemberRecordUrl}?mobile=$mobile&hpd_id=$recordId&api_key=${Config.apiKey}';
+      final res = await http.get(Uri.parse(postUrl), headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      });
+      if (res.statusCode == 200) {
+        final result = json.decode(res.body)['_HDPD_Result'][0]['remarks'];
+        return result;
+      } else {
+        return 'Server error occurred';
+      }
+    } on SocketException catch (_) {
+      return 'Internet is not connected';
+    }
+  }
+
 }

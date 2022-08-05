@@ -41,14 +41,14 @@ class _RecordAddPageState extends State<RecordAddPage> {
   DateTime _dateTime = DateTime.now();
 
   // controllers
-  final _sBPCtrl = TextEditingController();
-  final _dBPCtrl = TextEditingController();
-  final _heartRateCtrl = TextEditingController();
-  final _bloodGlucoseCtrl = TextEditingController();
-  final _heightCtrl = TextEditingController();
-  final _weightCtrl = TextEditingController();
-  final _waistCtrl = TextEditingController();
-  final _dateTimeCtrl = TextEditingController();
+  final _sBPCtrl = TextEditingController(text: '120');
+  final _dBPCtrl = TextEditingController(text: '120');
+  final _heartRateCtrl = TextEditingController(text: '120');
+  final _bloodGlucoseCtrl = TextEditingController(text: '120');
+  final _heightCtrl = TextEditingController(text: '120');
+  final _weightCtrl = TextEditingController(text: '120');
+  final _waistCtrl = TextEditingController(text: '120');
+  final _dateTimeCtrl = TextEditingController(text: '120');
 
   // data
   List<dynamic> _membersData = [];
@@ -76,10 +76,12 @@ class _RecordAddPageState extends State<RecordAddPage> {
 
   @override
   void initState() {
-    internetSubscription = InternetConnectionChecker().onStatusChange.listen((status) {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
       final hasInternet = status == InternetConnectionStatus.connected;
-      if(!hasInternet) {
-        connectivityBanner(context, 'No internet connection.', () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+      if (!hasInternet) {
+        connectivityBanner(context, 'No internet connection.',
+            () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
       } else {
         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
         _loadMembersData();
@@ -88,7 +90,8 @@ class _RecordAddPageState extends State<RecordAddPage> {
     //
     _selectMeasurement = _measurementScale[0];
     final time = DateFormat('hh:mm a').format(_dateTime);
-    _dateTimeCtrl.text = '${_dateTime.year}-${_dateTime.month}-${_dateTime.day} $time';
+    _dateTimeCtrl.text =
+        '${_dateTime.year}-${_dateTime.month}-${_dateTime.day} $time';
     // load members data
     _loadMembersData();
     super.initState();
@@ -102,10 +105,10 @@ class _RecordAddPageState extends State<RecordAddPage> {
   Future _loadMembersData() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
-    if(hasInternet) {
+    if (hasInternet) {
       final membersData = await MemberService().onLoadMembers(widget.mobile);
       final message = membersData['message'];
-      if(message == 'success') {
+      if (message == 'success') {
         setState(() {
           _selectMember = widget.memberId;
           _membersData = membersData['data'];
@@ -156,518 +159,551 @@ class _RecordAddPageState extends State<RecordAddPage> {
             systemOverlayStyle: const SystemUiOverlayStyle(
               statusBarColor: kColorBg, //android status bar color
               statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-              statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
+              statusBarIconBrightness:
+                  Brightness.dark, // For Android: (dark icons)
             ),
           ),
         ),
-        body: _isPageLoaded ? Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-              child: Row(
+        body: _isPageLoaded
+            ? Column(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => RecordPage(
-                            mobile: widget.mobile,
-                            memberId: _selectMember,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => RecordPage(
+                                  mobile: widget.mobile,
+                                  memberId: _selectMember,
+                                ),
+                              ),
+                              (Route<dynamic> route) => false,
+                            );
+                          },
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            size: 20,
                           ),
                         ),
-                        (Route<dynamic> route) => false,
-                      );
-                    },
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      size: 20,
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.only(right: size.width * 0.06),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'Add Record',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(
+                    height: 15,
                   ),
                   Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(right: size.width * 0.06),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'Add Record',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 18),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Expanded(
-              child: Form(
-                key: _addRecordFormKey,
-                child: ListView(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        hint: const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Select an option'),
-                        ),
-                        value: _selectMember,
-                        borderRadius: BorderRadius.circular(5),
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(
-                              left: 12, right: 12, bottom: 12, top: 12),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide:
-                                const BorderSide(color: Colors.grey, width: 1),
-                          ),
-                        ),
-                        items: _membersData.map((item) {
-                          return DropdownMenuItem(
-                            value: item['HP_ID'].toString(),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    item['HP_Name'],
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (String? val) {
-                          setState(() => _selectMember = val);
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    // form body
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
+                    child: Form(
+                      key: _addRecordFormKey,
+                      child: ListView(
                         children: [
-                          TextFormField(
-                            controller: _sBPCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              hint: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Select an option'),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
+                              value: _selectMember,
+                              borderRadius: BorderRadius.circular(5),
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(
+                                    left: 12, right: 12, bottom: 12, top: 12),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: const BorderSide(
+                                      color: Colors.grey, width: 1),
+                                ),
                               ),
-                              hintText: 'Systolic blood pressure',
+                              items: _membersData.map((item) {
+                                return DropdownMenuItem(
+                                  value: item['HP_ID'].toString(),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          item['HP_Name'],
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? val) {
+                                setState(() => _selectMember = val);
+                              },
                             ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
                           ),
                           const SizedBox(
                             height: 10,
                           ),
-                          TextFormField(
-                            controller: _dBPCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Diastolic blood pressure',
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            controller: _heartRateCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Heart rate',
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            children: [
-                              const Text('Medication: '),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                    width: 30,
-                                    child: Radio(
-                                      value: SelectMedication.yes,
-                                      groupValue: _medication,
-                                      onChanged: (SelectMedication? value) {
-                                        setState(() => _medication = value!);
-                                      },
+                          // form body
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: _sBPCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
                                     ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Systolic blood pressure',
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() =>
-                                          _medication = SelectMedication.yes);
-                                    },
-                                    child: const Text('Yes'),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                TextFormField(
+                                  controller: _dBPCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Diastolic blood pressure',
                                   ),
-                                ],
-                              ),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                    width: 30,
-                                    child: Radio(
-                                        value: SelectMedication.no,
-                                        groupValue: _medication,
-                                        onChanged: (SelectMedication? value) {
-                                          setState(() => _medication = value!);
-                                        }),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                TextFormField(
+                                  controller: _heartRateCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Heart rate',
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() =>
-                                          _medication = SelectMedication.no);
-                                    },
-                                    child: const Text('No'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          TextFormField(
-                            controller: _bloodGlucoseCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Blood glucose',
-                              suffixText: 'mg/dl',
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          DropdownButtonFormField<String>(
-                            isExpanded: true,
-                            hint: const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('Select an option'),
-                            ),
-                            borderRadius: BorderRadius.circular(5),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                left: 12,
-                                right: 12,
-                                bottom: 12,
-                                top: 12,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Blood glucose',
-                            ),
-                            value: _selectMeasurement,
-                            items: _measurementScale.map((item) {
-                              return DropdownMenuItem(
-                                value: item,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Row(
                                   children: [
+                                    const Text('Medication: '),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
+                                          width: 30,
+                                          child: Radio(
+                                            value: SelectMedication.yes,
+                                            groupValue: _medication,
+                                            onChanged:
+                                                (SelectMedication? value) {
+                                              setState(
+                                                  () => _medication = value!);
+                                            },
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() => _medication =
+                                                SelectMedication.yes);
+                                          },
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 20,
+                                          width: 30,
+                                          child: Radio(
+                                              value: SelectMedication.no,
+                                              groupValue: _medication,
+                                              onChanged:
+                                                  (SelectMedication? value) {
+                                                setState(
+                                                    () => _medication = value!);
+                                              }),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() => _medication =
+                                                SelectMedication.no);
+                                          },
+                                          child: const Text('No'),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                TextFormField(
+                                  controller: _bloodGlucoseCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Blood glucose',
+                                    suffixText: 'mg/dl',
+                                  ),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                DropdownButtonFormField<String>(
+                                  isExpanded: true,
+                                  hint: const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text('Select an option'),
+                                  ),
+                                  borderRadius: BorderRadius.circular(5),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 12,
+                                      right: 12,
+                                      bottom: 12,
+                                      top: 12,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Blood glucose',
+                                  ),
+                                  value: _selectMeasurement,
+                                  items: _measurementScale.map((item) {
+                                    return DropdownMenuItem(
+                                      value: item,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              item,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? val) =>
+                                      setState(() => _selectMeasurement = val),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                TextFormField(
+                                  controller: _heightCtrl,
+                                  //keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    hintText: 'Height',
+                                    suffixText: 'ft',
+                                  ),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (val) => _computeBMI(),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                TextFormField(
+                                  controller: _weightCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Weight',
+                                    suffixText: 'kg',
+                                  ),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (val) => _computeBMI(),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                TextFormField(
+                                  controller: _waistCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        bottom: 12,
+                                        top: 12),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                      borderSide: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                    hintText: 'Waist',
+                                    suffixText: 'inches',
+                                  ),
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (String? val) {
+                                    if (val == null || val.isEmpty) {
+                                      return 'This field is required';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Compute BMI: ',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     Expanded(
                                       child: Text(
-                                        item,
-                                        overflow: TextOverflow.ellipsis,
+                                        '$_calculatedBMI $_resultBMI',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (String? val) =>
-                                setState(() => _selectMeasurement = val),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            controller: _heightCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Height',
-                              suffixText: 'ft',
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                            onChanged: (String val) => _computeBMI(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            controller: _weightCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Weight',
-                              suffixText: 'kg',
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                            onChanged: (String val) => _computeBMI(),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          TextFormField(
-                            controller: _waistCtrl,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 12, right: 12, bottom: 12, top: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 1),
-                              ),
-                              hintText: 'Waist',
-                              suffixText: 'inches',
-                            ),
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            validator: (String? val) {
-                              if (val == null || val.isEmpty) {
-                                return 'This field is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            children: [
-                              const Text(
-                                'Compute BMI: ',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
+                                const SizedBox(
+                                  height: 5,
                                 ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '$_calculatedBMI $_resultBMI',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  children: const [
+                                    Expanded(
+                                      child: Text(
+                                        'BMI = weight in kg / height squared in meters.',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            children: const [
-                              Expanded(
-                                child: Text(
-                                  'BMI = weight in kg / height squared in meters.',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                  ),
+                                const SizedBox(
+                                  height: 10,
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          InkWell(
-                            onTap: _selectDatetime,
-                            child: IgnorePointer(
-                              child: TextFormField(
-                                controller: _dateTimeCtrl,
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                  contentPadding: const EdgeInsets.only(
-                                    left: 12,
-                                    right: 12,
-                                    bottom: 12,
-                                    top: 12,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                    borderSide: const BorderSide(
-                                      color: Colors.grey,
-                                      width: 1,
+                                InkWell(
+                                  onTap: _selectDatetime,
+                                  child: IgnorePointer(
+                                    child: TextFormField(
+                                      controller: _dateTimeCtrl,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                        contentPadding: const EdgeInsets.only(
+                                          left: 12,
+                                          right: 12,
+                                          bottom: 12,
+                                          top: 12,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          borderSide: const BorderSide(
+                                            color: Colors.grey,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        hintText: 'Measurement Datetime',
+                                        suffixIcon: const Icon(
+                                          Icons.date_range_outlined,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  hintText: 'Measurement Datetime',
-                                  suffixIcon: const Icon(
-                                    Icons.date_range_outlined,
+                                ),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: MaterialButton(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    color: kColorPrimary,
+                                    onPressed: _onPressedSaveRecord,
+                                    child: const Text(
+                                      'Save Record',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                           const SizedBox(
-                            height: 15,
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: MaterialButton(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              color: kColorPrimary,
-                              onPressed: _onPressedSaveRecord,
-                              child: const Text(
-                                'Save Record',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
+                            height: 30,
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ) : const Center(child: CircularProgressIndicator()),
+                  ),
+                ],
+              )
+            : const Center(child: CircularProgressIndicator()),
       ),
     );
   }
@@ -686,7 +722,8 @@ class _RecordAddPageState extends State<RecordAddPage> {
       time.minute,
     );
     final formatTime = DateFormat('hh:mm a').format(dateTime);
-    _dateTimeCtrl.text = '${dateTime.year}-${dateTime.month}-${dateTime.day} $formatTime';
+    _dateTimeCtrl.text =
+        '${dateTime.year}-${dateTime.month}-${dateTime.day} $formatTime';
     setState(() => _dateTime = dateTime);
   }
 
@@ -711,16 +748,18 @@ class _RecordAddPageState extends State<RecordAddPage> {
       _onDoneSaveRecord(message);
     }
   }
+
   //
   _onPostSaveRecord() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
-    if(hasInternet) {
+    if (hasInternet) {
       final time = DateFormat('hh:mm a').format(_dateTime);
       Map<String, String> recordMap = {
         "HPD_HP_ID": _selectMember!,
         "HPD_Date": '${_dateTime.year}-${_dateTime.month}-${_dateTime.day}',
-        "HPD_DateTime": '${_dateTime.year}-${_dateTime.month}-${_dateTime.day} $time',
+        "HPD_DateTime":
+            '${_dateTime.year}-${_dateTime.month}-${_dateTime.day} $time',
         "HPD_SBP": _sBPCtrl.text,
         "HPD_DBP": _dBPCtrl.text,
         "HPD_HeartRate": _heartRateCtrl.text,
@@ -737,9 +776,10 @@ class _RecordAddPageState extends State<RecordAddPage> {
       return 'No internet connection';
     }
   }
+
   //
   _onDoneSaveRecord(String message) {
-    if(message == 'Successful') {
+    if (message == 'Successful') {
       Navigator.pop(context);
       Fluttertoast.showToast(
         msg: 'Member record has been added successfully',
@@ -751,7 +791,8 @@ class _RecordAddPageState extends State<RecordAddPage> {
             mobile: widget.mobile,
             memberId: _selectMember,
           ),
-        ), (Route<dynamic> route) => false,
+        ),
+        (Route<dynamic> route) => false,
       );
     } else {
       Navigator.pop(context);
@@ -761,6 +802,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
       );
     }
   }
+
   //
   //
   String _bmiResult(double bmi) {
@@ -776,17 +818,22 @@ class _RecordAddPageState extends State<RecordAddPage> {
     }
     return bmiResult;
   }
+
   //
   _computeBMI() {
-    double weight = double.parse(_weightCtrl.text);//kg
-    double height = double.parse(_heightCtrl.text);//ft
-    height = height * 0.3048;// meters
-    height *= height;//meter square
-    double bmi = weight / height;
-    final result = _bmiResult(bmi);
-    setState(() {
-      _resultBMI = result;
-      _calculatedBMI = double.parse(bmi.toStringAsFixed(1));
-    });
+    String strHeight = _heightCtrl.text;
+    String strWeight = _weightCtrl.text;
+    if(strHeight.isNotEmpty && strWeight.isNotEmpty) {
+      double height = double.parse(strHeight); //ft
+      double weight = double.parse(strWeight); //kg
+      height = height * 0.3048; // meters
+      height *= height; //meter square
+      double bmi = weight / height;
+      final result = _bmiResult(bmi);
+      setState(() {
+        _resultBMI = result;
+        _calculatedBMI = double.parse(bmi.toStringAsFixed(1));
+      });
+    }
   }
 }

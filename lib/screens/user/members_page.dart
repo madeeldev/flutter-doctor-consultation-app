@@ -84,7 +84,6 @@ class _MembersPageState extends State<MembersPage> {
       final message = membersData['message'];
       if (message == 'success') {
         final data = membersData['data'];
-        debugPrint(data.toString());
         setState(() {
           // sort if there is data
           _membersData = data.isNotEmpty ? data.reversed.toList() : data;
@@ -712,7 +711,7 @@ class _MembersPageState extends State<MembersPage> {
     Navigator.of(context).pop();
     if(memberId != null) {
       showDialogBox(context);
-      _onPostRemoveMember(memberId).then((message) {
+      _onPostRemoveMember(memberId).then((String message) {
         if(message == 'Success!') {
           Navigator.of(context).pop();
           _removeItem(index);

@@ -6,6 +6,8 @@ import 'package:flutter_hami/screens/dashboard_page.dart';
 import 'package:flutter_hami/screens/user/record_add_page.dart';
 import 'package:flutter_hami/services/member_service.dart';
 import 'package:flutter_hami/widget/connectivity_banner.dart';
+import 'package:flutter_hami/widget/show_confirmation_alert.dart';
+import 'package:flutter_hami/widget/show_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
@@ -104,8 +106,9 @@ class _RecordPageState extends State<RecordPage> {
             .onLoadMemberRecord(widget.mobile, _selectMember!);
         final message = memberRecordData['message'];
         if (message == 'success') {
+          final data = memberRecordData['data'];
           setState(() {
-            _memberRecordData = memberRecordData['data'];
+            _memberRecordData = data;
             _isPageLoaded = true;
           });
         }
@@ -287,8 +290,12 @@ class _RecordPageState extends State<RecordPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            DateFormat('EEEE, MM/dd/yyyy hh:mm a')
-                                .format(DateTime.parse(record['HPD_DateTime']))
+                            DateFormat(
+                              'EEEE, MM/dd/yyyy hh:mm a',
+                            )
+                                .format(
+                                  DateTime.parse(record['HPD_DateTime']),
+                                )
                                 .toString(),
                             style: TextStyle(
                               color: Colors.black.withOpacity(0.8),
@@ -344,11 +351,11 @@ class _RecordPageState extends State<RecordPage> {
                                     height: 15,
                                     child: PopupMenuButton<Menu>(
                                       padding: EdgeInsets.zero,
-                                      onSelected: (Menu item) {
-                                        // setState(() {
-                                        //   _selectedMenu = item.name;
-                                        // });
-                                      },
+                                      onSelected: (Menu menu) =>
+                                          _onSelectedPopupMenu(
+                                        menu,
+                                        record['HPD_ID'],
+                                      ),
                                       icon: Icon(
                                         Icons.more_vert,
                                         color: Colors.black.withOpacity(0.8),
@@ -656,7 +663,8 @@ class _RecordPageState extends State<RecordPage> {
                                         children: [
                                           Image(
                                             image: const AssetImage(
-                                                'assets/images/bmi_icon.png'),
+                                              'assets/images/bmi_icon.png',
+                                            ),
                                             width: 20,
                                             color: Colors.red[900],
                                           ),
@@ -751,5 +759,64 @@ class _RecordPageState extends State<RecordPage> {
     }
     return bmiResult;
   }
+
   //
+  _onSelectedPopupMenu(Menu menu, int recordId) {
+    switch (menu) {
+      case Menu.editRecord:
+        break;
+      case Menu.removeRecord:
+        showConfirmationAlert(
+          context,
+          _onPressedCancelBtn,
+          () => _onPressedContinueBtn(recordId),
+          "Warning message",
+          "Are you sure you want to remove this record?",
+        );
+        break;
+    }
+  }
+
+  //
+  _onPressedCancelBtn() {
+    Navigator.of(context).pop();
+  }
+
+  //
+  _onPressedContinueBtn(int recordId) {
+    Navigator.of(context).pop();
+    if (recordId > 0) {
+      showDialogBox(context);
+      _onPostRemoveMemberRecord(recordId).then((String message) {
+        if (message == 'Success!') {
+          _onDoneRemoveMemberRecord(recordId);
+        } else {
+          Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_LONG,
+          );
+        }
+      });
+    }
+  }
+  //
+  Future<String> _onPostRemoveMemberRecord(int recordId) async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if (hasInternet) {
+      final message =
+          await MemberService().onRemoveMemberRecord(widget.mobile, recordId);
+      return message;
+    } else {
+      return 'No internet connection';
+    }
+  }
+
+  //
+  _onDoneRemoveMemberRecord(int recordId) {
+    Navigator.of(context).pop();
+    setState(() {
+      _memberRecordData = List.from(_memberRecordData)..removeWhere((record) => record['HPD_ID'] == recordId);
+    });
+  }
 }

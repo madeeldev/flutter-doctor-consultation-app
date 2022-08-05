@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
+import 'package:flutter_hami/screens/user/awareness_material_page.dart';
 import 'package:flutter_hami/screens/user/members_page.dart';
 import 'package:flutter_hami/screens/user/record_page.dart';
 import 'package:badges/badges.dart';
@@ -25,11 +26,12 @@ class _DashboardPageState extends State<DashboardPage> {
         preferredSize: Size.zero,
         child: AppBar(
           elevation: 0,
-          backgroundColor: kColorPrimary,//ios status bar colors
+          backgroundColor: kColorPrimary, //ios status bar colors
           systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: kColorPrimary,//android status bar color
+            statusBarColor: kColorPrimary, //android status bar color
             statusBarBrightness: Brightness.dark, // For iOS: (dark icons)
-            statusBarIconBrightness: Brightness.light, // For Android: (dark icons)
+            statusBarIconBrightness:
+                Brightness.light, // For Android: (dark icons)
           ),
         ),
       ),
@@ -55,7 +57,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       onTap: () {},
                       borderRadius: BorderRadius.circular(10),
                       child: Badge(
-                        badgeContent: const Text('3', style: TextStyle(color: Colors.black),),
+                        badgeContent: const Text(
+                          '3',
+                          style: TextStyle(color: Colors.black),
+                        ),
                         animationType: BadgeAnimationType.scale,
                         badgeColor: Colors.greenAccent,
                         child: SizedBox(
@@ -63,7 +68,11 @@ class _DashboardPageState extends State<DashboardPage> {
                           width: 40,
                           child: Stack(
                             children: [
-                              const Center(child: Icon(Icons.notifications_none_outlined, size: 30,)),
+                              const Center(
+                                  child: Icon(
+                                Icons.notifications_none_outlined,
+                                size: 30,
+                              )),
                               Positioned(
                                 top: 12,
                                 right: 10,
@@ -117,8 +126,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 spreadRadius: 8,
                                 blurStyle: BlurStyle.inner,
                               ),
-                            ]
-                        ),
+                            ]),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -160,17 +168,23 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                           onTap: _onPressedMembers,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.groups, size: size.height*0.05, color: Colors.deepPurple,),
+                              Icon(
+                                Icons.groups,
+                                size: size.height * 0.05,
+                                color: Colors.deepPurple,
+                              ),
                               SizedBox(
                                 child: Text(
                                   'Members',
                                   style: TextStyle(
-                                    fontSize: size.height*0.018,
+                                    fontSize: size.height * 0.018,
                                   ),
                                 ),
                               ),
@@ -179,7 +193,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   'ممبرز',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    fontFamily: 'Jameel-Noori-Nastaleeq'
+                                    fontFamily: 'Jameel-Noori-Nastaleeq',
                                   ),
                                 ),
                               ),
@@ -196,20 +210,28 @@ class _DashboardPageState extends State<DashboardPage> {
                         shadowColor: Colors.black,
                         color: Colors.white,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                           onTap: _onPressedRecord,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.description, size: size.height*0.05, color: Colors.orange,),
+                              Icon(
+                                Icons.description,
+                                size: size.height * 0.05,
+                                color: Colors.orange,
+                              ),
                               SizedBox(
                                 child: Text(
                                   'Record',
                                   style: TextStyle(
-                                    fontSize: size.height*0.018,
+                                    fontSize: size.height * 0.018,
                                   ),
                                 ),
                               ),
@@ -218,7 +240,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   'ریکارڈ',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    fontFamily: 'Jameel-Noori-Nastaleeq'
+                                    fontFamily: 'Jameel-Noori-Nastaleeq',
                                   ),
                                 ),
                               ),
@@ -229,7 +251,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15,),
+                const SizedBox(
+                  height: 15,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -241,20 +265,28 @@ class _DashboardPageState extends State<DashboardPage> {
                         shadowColor: Colors.black,
                         color: Colors.white,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
-                          onTap: () {},
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
+                          onTap: _onPressedAwarenessMaterial,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.highlight, size: size.height*0.05, color: Colors.green,),
+                              Icon(
+                                Icons.highlight,
+                                size: size.height * 0.05,
+                                color: Colors.green,
+                              ),
                               SizedBox(
                                 child: Text(
                                   'Awareness',
                                   style: TextStyle(
-                                    fontSize: size.height*0.018,
+                                    fontSize: size.height * 0.018,
                                   ),
                                 ),
                               ),
@@ -262,7 +294,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 child: Text(
                                   'material',
                                   style: TextStyle(
-                                    fontSize: size.height*0.018,
+                                    fontSize: size.height * 0.018,
                                   ),
                                 ),
                               ),
@@ -271,7 +303,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   'آگاہی',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    fontFamily: 'Jameel-Noori-Nastaleeq'
+                                    fontFamily: 'Jameel-Noori-Nastaleeq',
                                   ),
                                 ),
                               ),
@@ -288,22 +320,30 @@ class _DashboardPageState extends State<DashboardPage> {
                         shadowColor: Colors.black,
                         color: Colors.white,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                           onTap: () {},
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.medication_liquid, size: size.height*0.05, color: Colors.indigo,),
+                                Icon(
+                                  Icons.medication_liquid,
+                                  size: size.height * 0.05,
+                                  color: Colors.indigo,
+                                ),
                                 SizedBox(
                                   child: Text(
                                     'Medicine',
                                     style: TextStyle(
-                                      fontSize: size.height*0.018,
+                                      fontSize: size.height * 0.018,
                                     ),
                                   ),
                                 ),
@@ -312,7 +352,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     'ادویات',
                                     style: TextStyle(
                                       fontSize: 20,
-                                      fontFamily: 'Jameel-Noori-Nastaleeq'
+                                      fontFamily: 'Jameel-Noori-Nastaleeq',
                                     ),
                                   ),
                                 ),
@@ -324,7 +364,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15,),
+                const SizedBox(
+                  height: 15,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -336,22 +378,30 @@ class _DashboardPageState extends State<DashboardPage> {
                         shadowColor: Colors.black,
                         color: Colors.white,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                           onTap: () {},
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.chat, size: size.height*0.05, color: Colors.blueAccent,),
+                                Icon(
+                                  Icons.chat,
+                                  size: size.height * 0.05,
+                                  color: Colors.blueAccent,
+                                ),
                                 SizedBox(
                                   child: Text(
                                     'Ask Us',
                                     style: TextStyle(
-                                      fontSize: size.height*0.018,
+                                      fontSize: size.height * 0.018,
                                     ),
                                   ),
                                 ),
@@ -360,7 +410,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     'جانئیے',
                                     style: TextStyle(
                                       fontSize: 20,
-                                      fontFamily: 'Jameel-Noori-Nastaleeq'
+                                      fontFamily: 'Jameel-Noori-Nastaleeq',
                                     ),
                                   ),
                                 ),
@@ -381,19 +431,25 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
                         child: InkWell(
-                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20),
+                          ),
                           onTap: _onPressedLogout,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.exit_to_app, size: size.height*0.05, color: kColorPrimary,),
+                                Icon(
+                                  Icons.exit_to_app,
+                                  size: size.height * 0.05,
+                                  color: kColorPrimary,
+                                ),
                                 SizedBox(
                                   child: Text(
                                     'Logout',
                                     style: TextStyle(
-                                      fontSize: size.height*0.018,
+                                      fontSize: size.height * 0.018,
                                     ),
                                   ),
                                 ),
@@ -402,7 +458,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     'لاگ آوٹ',
                                     style: TextStyle(
                                       fontSize: 20,
-                                      fontFamily: 'Jameel-Noori-Nastaleeq'
+                                      fontFamily: 'Jameel-Noori-Nastaleeq',
                                     ),
                                   ),
                                 ),
@@ -424,12 +480,40 @@ class _DashboardPageState extends State<DashboardPage> {
 
   //
   _onPressedMembers() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MembersPage(mobile: widget.mobile,),),);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MembersPage(
+          mobile: widget.mobile,
+        ),
+      ),
+    );
   }
+
   //
   _onPressedRecord() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => RecordPage(mobile: widget.mobile,),),);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecordPage(
+          mobile: widget.mobile,
+        ),
+      ),
+    );
   }
+
+  //
+  _onPressedAwarenessMaterial() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AwarenessMaterialPage(
+          mobile: widget.mobile,
+        ),
+      ),
+    );
+  }
+
   //
   _onPressedLogout() async {
     await SharedPreference().removeUser().then((_) {
@@ -437,7 +521,7 @@ class _DashboardPageState extends State<DashboardPage> {
         MaterialPageRoute(
           builder: (context) => const LoginPage(),
         ),
-            (Route<dynamic> route) => false,
+        (Route<dynamic> route) => false,
       );
     });
   }
