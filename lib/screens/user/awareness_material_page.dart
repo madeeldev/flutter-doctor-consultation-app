@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/screens/dashboard_page.dart';
-import 'package:flutter_hami/screens/user/user-material/videos_page.dart';
+import 'package:flutter_hami/screens/user/userMaterial/videos_page.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
 import '../../colors.dart';
@@ -181,7 +181,7 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
               child: GridView(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  mainAxisExtent: size.height * 0.22,
+                  mainAxisExtent: size.height * 0.25,
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 10,
                 ),
@@ -202,21 +202,21 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
                           Transform.rotate(
                             angle: 4,
                             child: Container(
-                              width: 60,
-                              height: 60,
+                              width: 50,
+                              height: 50,
                               color: kColorPrimary.withOpacity(0.9),
                               child: Transform.rotate(
                                 angle: -4,
                                 child: Icon(
                                   _actionLabel[idx]['icon'] as IconData,
-                                  size: 35,
+                                  size: 25,
                                   color: Colors.white,
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(
-                            height: 20,
+                            height: 15,
                           ),
                           _actionLabel[idx]['en1'] == null
                               ? Column(
@@ -292,7 +292,7 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const VideosPage(),
+            builder: (context) => VideosPage(mobile: widget.mobile,),
           ),
         );
         break;

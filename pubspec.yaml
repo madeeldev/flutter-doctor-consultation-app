@@ -46,6 +46,8 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   intl: ^0.17.0
   flutter_tabler_icons: ^1.1.1
+  video_player: ^2.4.6
+  cached_network_image: ^3.2.1
 
 
 dev_dependencies:
