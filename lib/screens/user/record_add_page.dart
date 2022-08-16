@@ -185,7 +185,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
                           },
                           child: const Icon(
                             Icons.arrow_back_ios,
-                            size: 20,
+                            size: 18,
                           ),
                         ),
                         Expanded(

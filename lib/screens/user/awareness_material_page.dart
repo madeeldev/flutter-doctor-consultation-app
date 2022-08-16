@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/screens/dashboard_page.dart';
+import 'package:flutter_hami/screens/user/userMaterial/diet_chart_page.dart';
 import 'package:flutter_hami/screens/user/userMaterial/videos_page.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 
@@ -41,7 +42,7 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
     {
       'en': 'Blood Pressure',
       'en1': '& Ramazan',
-      'ur': 'بلڈپریشراوررمضان, ',
+      'ur': 'بلڈپریشراوررمضان ',
       'icon': TablerIcons.stethoscope,
       'action': TileType.bloodPressureRamazan
     },
@@ -102,7 +103,7 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
                         },
                         child: const Icon(
                           Icons.arrow_back_ios,
-                          size: 20,
+                          size: 18,
                           color: Colors.white,
                         ),
                       ),
@@ -181,7 +182,7 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
               child: GridView(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  mainAxisExtent: size.height * 0.25,
+                  mainAxisExtent: size.height * 0.24,
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 10,
                 ),
@@ -297,6 +298,12 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
         );
         break;
       case TileType.dietChart:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DietChartPage(mobile: widget.mobile,),
+          ),
+        );
         break;
       case TileType.bloodPressureRamazan:
         break;

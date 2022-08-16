@@ -113,7 +113,7 @@ class _VideosPageState extends State<VideosPage> {
                                 },
                                 child: const Icon(
                                   Icons.arrow_back_ios,
-                                  size: 20,
+                                  size: 18,
                                   color: Colors.white,
                                 ),
                               ),
@@ -230,120 +230,134 @@ class _VideosPageState extends State<VideosPage> {
                   ),
                 ),
                 child: _isPageLoaded
-                    ? ListView.builder(
-                        itemCount: _videosData.length,
-                        itemBuilder: (_, int idx) {
-                          return GestureDetector(
-                            onTap: () {
-                              _onTapVideo(idx);
-                              setState(() {
-                                if (_playArea == false) {
-                                  _playArea = true;
-                                }
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 70,
-                                  margin: const EdgeInsets.only(
-                                    left: 20,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        height: 70,
-                                        width: 70,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          border: Border.all(
-                                            color: Colors.black26,
-                                          ),
-                                          image: DecorationImage(
-                                            image: CachedNetworkImageProvider(
-                                              _videosData[idx]['HAM_Thumbnail'],
-                                            ),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.play_circle,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                child: Text(
-                                                  _videosData[idx]['HAM_Desc'],
-                                                  style: const TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 8,
-                                              ),
-                                              Text(
-                                                'Click on video to play',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.black
-                                                      .withOpacity(0.5),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
+                    ? _videosData.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: _videosData.length,
+                            itemBuilder: (_, int idx) {
+                              return GestureDetector(
+                                onTap: () {
+                                  _onTapVideo(idx);
+                                  setState(() {
+                                    if (_playArea == false) {
+                                      _playArea = true;
+                                    }
+                                  });
+                                },
+                                child: Column(
                                   children: [
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                    for (var i = 0; i < 70; i++)
-                                      i.isEven
-                                          ? Container(
-                                              width: 3,
-                                              height: 1,
-                                              decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius:
-                                                    BorderRadius.circular(2),
+                                    Container(
+                                      height: 70,
+                                      margin: const EdgeInsets.only(
+                                        left: 20,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            height: 70,
+                                            width: 70,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              border: Border.all(
+                                                color: Colors.black26,
                                               ),
-                                            )
-                                          : Container(
-                                              width: 3,
-                                              height: 1,
+                                              image: DecorationImage(
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                  _videosData[idx]
+                                                      ['HAM_Thumbnail'],
+                                                ),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.play_circle,
                                               color: Colors.white,
                                             ),
+                                          ),
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    child: Text(
+                                                      _videosData[idx]
+                                                          ['HAM_Desc'],
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  Text(
+                                                    'Click on video to play',
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.black
+                                                          .withOpacity(0.5),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        const SizedBox(
+                                          width: 20,
+                                        ),
+                                        for (var i = 0; i < 70; i++)
+                                          i.isEven
+                                              ? Container(
+                                                  width: 3,
+                                                  height: 1,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            2),
+                                                  ),
+                                                )
+                                              : Container(
+                                                  width: 3,
+                                                  height: 1,
+                                                  color: Colors.white,
+                                                ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
                                   ],
                                 ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                              ],
+                              );
+                            },
+                          )
+                        : Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.only(
+                              bottom: 20,
                             ),
-                          );
-                        },
-                      )
+                            child: const Text('No videos was found to play.'),
+                          )
                     : Container(
                         alignment: Alignment.center,
                         margin: const EdgeInsets.only(
@@ -370,7 +384,7 @@ class _VideosPageState extends State<VideosPage> {
         VideoPlayerController.network(_videosData[index]['HAM_URL']);
     final old = _videoPlayerController;
     _videoPlayerController = controller;
-    if(old != null) {
+    if (old != null) {
       old.removeListener(_onVideoControllerUpdate);
       old.pause();
     }
@@ -383,6 +397,7 @@ class _VideosPageState extends State<VideosPage> {
       setState(() {});
     });
   }
+
   //
   var _onUpdateVideoControllerTime = 0;
   Duration? _duration;
@@ -390,12 +405,12 @@ class _VideosPageState extends State<VideosPage> {
   var _progress = 0.0;
   //
   void _onVideoControllerUpdate() async {
-    if(_disposed) {
+    if (_disposed) {
       return;
     }
     _onUpdateVideoControllerTime = 0;
     final now = DateTime.now().millisecondsSinceEpoch;
-    if(_onUpdateVideoControllerTime > now) {
+    if (_onUpdateVideoControllerTime > now) {
       return;
     }
     _onUpdateVideoControllerTime = now + 500;
@@ -413,16 +428,17 @@ class _VideosPageState extends State<VideosPage> {
 
     _duration ??= _videoPlayerController?.value.duration;
     var duration = _duration;
-    if(duration == null) return;
+    if (duration == null) return;
 
     var position = await controller.position;
     _position = position;
 
     final playing = controller.value.isPlaying;
-    if(_playArea) {
-      if(_disposed) return;
+    if (_playArea) {
+      if (_disposed) return;
       setState(() {
-        _progress = position!.inMilliseconds.ceilToDouble() / duration.inMilliseconds.ceilToDouble();
+        _progress = position!.inMilliseconds.ceilToDouble() /
+            duration.inMilliseconds.ceilToDouble();
       });
     }
     _isPlaying = playing;
@@ -446,7 +462,9 @@ class _VideosPageState extends State<VideosPage> {
           CircularProgressIndicator(
             color: Colors.white,
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Text(
             'Preparing...',
             style: TextStyle(
@@ -458,10 +476,12 @@ class _VideosPageState extends State<VideosPage> {
       );
     }
   }
+
   //
   String convertTwo(int value) {
     return value < 10 ? "0$value" : "$value";
   }
+
   //
   Widget _controlView() {
     final noMute = (_videoPlayerController?.value.volume ?? 0) > 0;
@@ -483,7 +503,7 @@ class _VideosPageState extends State<VideosPage> {
               trackShape: const RoundedRectSliderTrackShape(),
               trackHeight: 2.0,
               thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 12.0,
+                enabledThumbRadius: 8.0,
               ),
               thumbColor: Colors.redAccent,
               overlayColor: Colors.red.withAlpha(32),
@@ -517,8 +537,10 @@ class _VideosPageState extends State<VideosPage> {
                 final duration = _videoPlayerController?.value.duration;
                 if (duration != null) {
                   var newValue = max(0, min(value, 99)) * 0.01;
-                  var milliSeconds = (duration.inMilliseconds * newValue).toInt();
-                  _videoPlayerController?.seekTo(Duration(milliseconds: milliSeconds));
+                  var milliSeconds =
+                      (duration.inMilliseconds * newValue).toInt();
+                  _videoPlayerController
+                      ?.seekTo(Duration(milliseconds: milliSeconds));
                   _videoPlayerController?.play();
                 }
               },
@@ -533,19 +555,22 @@ class _VideosPageState extends State<VideosPage> {
             children: [
               IconButton(
                 onPressed: () {
-                  if(noMute) {
+                  if (noMute) {
                     _videoPlayerController?.setVolume(0);
                   } else {
                     _videoPlayerController?.setVolume(1);
                   }
                   setState(() {});
                 },
-                icon: Icon(noMute ? Icons.volume_up : Icons.volume_off, color: Colors.white,),
+                icon: Icon(
+                  noMute ? Icons.volume_up : Icons.volume_off,
+                  color: Colors.white,
+                ),
               ),
               IconButton(
                 onPressed: () async {
                   final index = _isPlayingIndex - 1;
-                  if(index >= 0 && _videosData.isNotEmpty) {
+                  if (index >= 0 && _videosData.isNotEmpty) {
                     _initializeVideo(index);
                   } else {
                     Fluttertoast.showToast(msg: 'No more videos to play');
@@ -578,7 +603,7 @@ class _VideosPageState extends State<VideosPage> {
               IconButton(
                 onPressed: () async {
                   final index = _isPlayingIndex + 1;
-                  if(index <= _videosData.length - 1) {
+                  if (index <= _videosData.length - 1) {
                     _initializeVideo(index);
                   } else {
                     Fluttertoast.showToast(msg: 'No more videos in the list');
@@ -591,16 +616,13 @@ class _VideosPageState extends State<VideosPage> {
               ),
               Text(
                 "$minutes:$seconds",
-                style: const TextStyle(
-                  color: Colors.white,
-                  shadows: <Shadow>[
-                    Shadow(
-                      offset: Offset(0, 1),
-                      blurRadius: 4,
-                      color: Color.fromARGB(150, 0, 0, 0),
-                    ),
-                  ]
-                ),
+                style: const TextStyle(color: Colors.white, shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(0, 1),
+                    blurRadius: 4,
+                    color: Color.fromARGB(150, 0, 0, 0),
+                  ),
+                ]),
               ),
             ],
           ),

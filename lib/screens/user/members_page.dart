@@ -193,7 +193,7 @@ class _MembersPageState extends State<MembersPage> {
                                 },
                                 child: const Icon(
                                   Icons.arrow_back_ios,
-                                  size: 20,
+                                  size: 18,
                                 ),
                               ),
                               Expanded(
@@ -267,7 +267,7 @@ class _MembersPageState extends State<MembersPage> {
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
+                              horizontal: 8,
                             ),
                             margin: const EdgeInsets.only(
                               bottom: 30,

@@ -191,7 +191,7 @@ class _RecordPageState extends State<RecordPage> {
                           },
                           child: const Icon(
                             Icons.arrow_back_ios,
-                            size: 20,
+                            size: 18,
                           ),
                         ),
                         Expanded(

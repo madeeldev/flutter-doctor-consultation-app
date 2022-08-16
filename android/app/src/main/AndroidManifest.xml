@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.flutter_hami">
    <application
+        android:usesCleartextTraffic="true"
         android:label="flutter_hami"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
