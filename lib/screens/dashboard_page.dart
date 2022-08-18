@@ -7,6 +7,7 @@ import 'package:flutter_hami/screens/user/awareness_material_page.dart';
 import 'package:flutter_hami/screens/user/members_page.dart';
 import 'package:flutter_hami/screens/user/record_page.dart';
 import 'package:badges/badges.dart';
+import 'package:flutter_hami/screens/user/userMaterial/medicine_page.dart';
 
 class DashboardPage extends StatefulWidget {
   final String mobile;
@@ -328,7 +329,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: () {},
+                          onTap: _onPressedMedicine,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
@@ -508,6 +509,17 @@ class _DashboardPageState extends State<DashboardPage> {
       context,
       MaterialPageRoute(
         builder: (context) => AwarenessMaterialPage(
+          mobile: widget.mobile,
+        ),
+      ),
+    );
+  }
+  //
+  _onPressedMedicine() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MedicinePage(
           mobile: widget.mobile,
         ),
       ),

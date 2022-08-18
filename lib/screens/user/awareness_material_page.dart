@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/screens/dashboard_page.dart';
+import 'package:flutter_hami/screens/user/userMaterial/bp_heart_disease_page.dart';
+import 'package:flutter_hami/screens/user/userMaterial/bp_ramazan_page.dart';
 import 'package:flutter_hami/screens/user/userMaterial/diet_chart_page.dart';
 import 'package:flutter_hami/screens/user/userMaterial/videos_page.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
@@ -306,8 +308,20 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
         );
         break;
       case TileType.bloodPressureRamazan:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BpRamazanPage(mobile: widget.mobile,),
+          ),
+        );
         break;
       case TileType.bloodPressureHeartDisease:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BPHeartDiseasePage(mobile: widget.mobile,),
+          ),
+        );
         break;
     }
   }

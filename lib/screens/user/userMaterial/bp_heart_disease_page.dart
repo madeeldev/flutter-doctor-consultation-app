@@ -7,15 +7,15 @@ import '../../../services/awareness_data_service.dart';
 
 const kColorBg = Colors.white;
 
-class BpRamazanPage extends StatefulWidget {
+class BPHeartDiseasePage extends StatefulWidget {
   final String mobile;
-  const BpRamazanPage({required this.mobile, Key? key}) : super(key: key);
+  const BPHeartDiseasePage({required this.mobile, Key? key}) : super(key: key);
 
   @override
-  State<BpRamazanPage> createState() => _BpRamazanState();
+  State<BPHeartDiseasePage> createState() => _BpRamazanState();
 }
 
-class _BpRamazanState extends State<BpRamazanPage> {
+class _BpRamazanState extends State<BPHeartDiseasePage> {
   bool _isPageLoaded = false;
   bool _isGridview = true;
   List _imagesData = [];
@@ -31,12 +31,12 @@ class _BpRamazanState extends State<BpRamazanPage> {
     final message = data['message'];
     final materialData = data['data'];
     if (message == 'success') {
-      final bpRamazanImages =
-          materialData.where((e) => e['HAM_Type'] == 3).toList();
+      final bpHeartDiseaseImages =
+          materialData.where((e) => e['HAM_Type'] == 4).toList();
       if (mounted) {
         setState(() {
           _isPageLoaded = true;
-          _imagesData = bpRamazanImages;
+          _imagesData = bpHeartDiseaseImages;
         });
       }
     }
@@ -84,7 +84,7 @@ class _BpRamazanState extends State<BpRamazanPage> {
                         Container(
                           alignment: Alignment.center,
                           child: const Text(
-                            'Blood Pressure & Ramazan',
+                            'Blood Pressure & Heart Disease',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 18,

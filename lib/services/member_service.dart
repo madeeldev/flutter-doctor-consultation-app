@@ -132,4 +132,54 @@ class MemberService {
     }
   }
 
+  Future<Map<String, dynamic>> onLoadMemberMedicineRecord(String mobile, String memberId) async {
+    try {
+      final postUrl = '${Config.getMemberMedicineRecordUrl}?mobile=$mobile&hp_id=$memberId&api_key=${Config.apiKey}';
+      final res = await http.get(Uri.parse(postUrl), headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      });
+      if (res.statusCode == 200) {
+        final result = json.decode(res.body)['_Hami_Medicine_Result'];
+        return {
+          'message' : 'success',
+          'data': result
+        };
+      } else {
+        return {
+          'message' : 'Server error occurred',
+        };
+      }
+    } on SocketException catch (_) {
+      return {
+        'message' : 'Internet is not connected',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> onRemoveMemberMedicineRecord(String mobile, String medId) async {
+    try {
+      final postUrl = '${Config.removeMemberMedicineRecord}?mobile=$mobile&hm_id=$medId&api_key=${Config.apiKey}';
+      final res = await http.get(Uri.parse(postUrl), headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      });
+      if (res.statusCode == 200) {
+        final result = json.decode(res.body)['_Hami_DeleteMedicine_Result'];
+        return {
+          'message' : 'success',
+          'data': result
+        };
+      } else {
+        return {
+          'message' : 'Server error occurred',
+        };
+      }
+    } on SocketException catch (_) {
+      return {
+        'message' : 'Internet is not connected',
+      };
+    }
+  }
+
 }
