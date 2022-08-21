@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,7 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/services/awareness_data_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:video_player/video_player.dart';
+
+import '../../../widget/connectivity_banner.dart';
 
 class VideosPage extends StatefulWidget {
   final String mobile;
@@ -25,24 +29,51 @@ class _VideosPageState extends State<VideosPage> {
   int _isPlayingIndex = -1;
   VideoPlayerController? _videoPlayerController;
 
+  // has internet
+  late StreamSubscription internetSubscription;
+
   @override
   void initState() {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+      if (!hasInternet) {
+        connectivityBanner(context, 'No internet connection.',
+            () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
+    // load data
     _initData();
     super.initState();
   }
 
+  // check internet
+  Future<bool> _hasInternetConnection() async {
+    return await InternetConnectionChecker().hasConnection;
+  }
+
   _initData() async {
-    final data = await AwarenessDataService().loadData(widget.mobile);
-    final message = data['message'];
-    final materialData = data['data'];
-    if (message == 'success') {
-      final videos = materialData.where((e) => e['HAM_Type'] == 2).toList();
-      if (mounted) {
-        setState(() {
-          _isPageLoaded = true;
-          _videosData = videos;
-        });
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if (hasInternet) {
+      final data = await AwarenessDataService().loadData(widget.mobile);
+      final message = data['message'];
+      final materialData = data['data'];
+      if (message == 'success') {
+        final videos = materialData.where((e) => e['HAM_Type'] == 2).toList();
+        if (mounted) {
+          setState(() {
+            _isPageLoaded = true;
+            _videosData = videos;
+          });
+        }
       }
+    } else {
+      setState(() {
+        _isPageLoaded = true;
+      });
     }
   }
 
@@ -52,6 +83,7 @@ class _VideosPageState extends State<VideosPage> {
     _videoPlayerController?.pause();
     _videoPlayerController?.dispose();
     _videoPlayerController = null;
+    internetSubscription.cancel();
     super.dispose();
   }
 
@@ -100,7 +132,7 @@ class _VideosPageState extends State<VideosPage> {
                           width: size.width,
                           margin: const EdgeInsets.only(
                             left: 15,
-                            top: 5,
+                            top: 20,
                             right: 15,
                           ),
                           alignment: Alignment.topLeft,
@@ -127,7 +159,7 @@ class _VideosPageState extends State<VideosPage> {
                         ),
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.only(top: 100),
+                            padding: const EdgeInsets.only(top: 80),
                             child: Column(
                               children: [
                                 SizedBox(
@@ -182,36 +214,6 @@ class _VideosPageState extends State<VideosPage> {
                     width: size.width,
                     child: Column(
                       children: [
-                        Container(
-                          height: 20,
-                          width: size.width,
-                          margin: const EdgeInsets.only(
-                            left: 15,
-                            top: 5,
-                            right: 15,
-                          ),
-                          alignment: Alignment.topLeft,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back_ios,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.info_outline,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
                         Expanded(
                           child: _playView(context),
                         ),

@@ -117,26 +117,27 @@ class _MembersPageState extends State<MembersPage> {
 
   // validators
   _validateName(String? textVal, setState) {
+    debugPrint('_validateName');
     setState(() {
-      if (textVal != null && textVal.isNotEmpty) {
-        _nameErrMsg = '';
-      } else {
+      if(textVal == null || textVal.isEmpty) {
         _nameErrMsg = 'Name field is required';
+      } else {
+        _nameErrMsg = '';
       }
     });
   }
 
   _validateAge(String? textVal, setState) {
+    debugPrint('_validateAge');
     setState(() {
-      if (textVal != null && textVal.isNotEmpty) {
-        // not a number
+      if(textVal == null || textVal.isEmpty) {
+        _ageErrMsg = 'Age field is required';
+      } else {
         if (RegExp(r'^[a-z]+$').hasMatch(_ageCtrl.value.text)) {
           _ageErrMsg = 'Age is not a valid number';
         } else {
           _ageErrMsg = '';
         }
-      } else {
-        _ageErrMsg = 'Age field is required';
       }
     });
   }
@@ -410,11 +411,16 @@ class _MembersPageState extends State<MembersPage> {
                       child: const Text(
                         'Add New Patient',
                         style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 18),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.only(
+                        right: 8,
+                        top: 10,
+                      ),
                       child: InkWell(
                         onTap: () {
                           _nameCtrl.clear();
@@ -444,20 +450,24 @@ class _MembersPageState extends State<MembersPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5,
-                              style: BorderStyle.solid),
+                            color: Colors.grey,
+                            width: 0.5,
+                            style: BorderStyle.solid,
+                          ),
                         ),
                         child: TextFormField(
                           controller: _nameCtrl,
                           cursorColor: Colors.grey,
                           autocorrect: false,
                           decoration: const InputDecoration(
-                              isDense: true,
-                              border: InputBorder.none,
-                              hintText: 'Name'),
-                          onChanged: (String? val) =>
-                              _validateName(val, setState),
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: 'Name',
+                          ),
+                          onChanged: (String? val) => _validateName(
+                            val,
+                            setState,
+                          ),
                         ),
                       ),
                       Container(
@@ -484,20 +494,24 @@ class _MembersPageState extends State<MembersPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5,
-                              style: BorderStyle.solid),
+                            color: Colors.grey,
+                            width: 0.5,
+                            style: BorderStyle.solid,
+                          ),
                         ),
                         child: TextFormField(
                           controller: _ageCtrl,
                           cursorColor: Colors.grey,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                              isDense: true,
-                              border: InputBorder.none,
-                              hintText: 'Age'),
-                          onChanged: (String? val) =>
-                              _validateAge(val, setState),
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: 'Age',
+                          ),
+                          onChanged: (String? val) => _validateAge(
+                            val,
+                            setState,
+                          ),
                         ),
                       ),
                       Container(
@@ -530,17 +544,19 @@ class _MembersPageState extends State<MembersPage> {
                                     height: 20,
                                     width: 30,
                                     child: Radio(
-                                        value: SelectGender.male,
-                                        groupValue: _gender,
-                                        onChanged: (SelectGender? value) {
-                                          setState(() => _gender = value!);
-                                        }),
+                                      value: SelectGender.male,
+                                      groupValue: _gender,
+                                      onChanged: (SelectGender? value) {
+                                        setState(() => _gender = value!);
+                                      },
+                                    ),
                                   ),
                                   Expanded(
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(
-                                            () => _gender = SelectGender.male);
+                                          () => _gender = SelectGender.male,
+                                        );
                                       },
                                       child: const Text(
                                         'Male',
@@ -556,7 +572,7 @@ class _MembersPageState extends State<MembersPage> {
                               width: 12,
                             ),
                             Expanded(
-                              flex: 3,
+                              flex: 2,
                               child: Row(
                                 children: [
                                   SizedBox(
@@ -589,19 +605,21 @@ class _MembersPageState extends State<MembersPage> {
                           ],
                         ),
                       ),
-                      Container(
-                        height: 44,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.green,
+                      const SizedBox(height: 5,),
+                      Material(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(5),
+                        child: InkWell(
                           borderRadius: BorderRadius.circular(5),
-                        ),
-                        margin: const EdgeInsets.all(8.0),
-                        child: TextButton(
-                          onPressed: _onPressedSaveMember,
-                          child: const Text(
-                            "Save",
-                            style: TextStyle(color: Colors.white),
+                          onTap: () => _onPressedSaveMember(setState),
+                          child: Container(
+                            height: 30,
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.all(8.0),
+                            child: const Text(
+                              "Save",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
                       )
@@ -618,7 +636,7 @@ class _MembersPageState extends State<MembersPage> {
     context,
     SlibableAction action, [
     int index = 0,
-    int memberId = 0,
+    int? memberId = 0,
   ]) {
     //debugPrint('removing $index');
     switch (action) {
@@ -637,7 +655,7 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   //
-  _onPressedSaveMember() {
+  _onPressedSaveMember(setState) {
     // custom inputs error messages
     _validateName(_nameCtrl.value.text, setState);
     _validateAge(_ageCtrl.value.text, setState);
@@ -709,10 +727,10 @@ class _MembersPageState extends State<MembersPage> {
   //
   _onPressedContinueBtn(int index, int? memberId) {
     Navigator.of(context).pop();
-    if(memberId != null) {
+    if (memberId != null) {
       showDialogBox(context);
       _onPostRemoveMember(memberId).then((String message) {
-        if(message == 'Success!') {
+        if (message == 'Success!') {
           Navigator.of(context).pop();
           _removeItem(index);
         } else {
@@ -722,6 +740,11 @@ class _MembersPageState extends State<MembersPage> {
           );
         }
       });
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Newly added members are not removable until page is reloaded',
+        toastLength: Toast.LENGTH_LONG,
+      );
     }
   }
 

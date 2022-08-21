@@ -50,6 +50,9 @@ dependencies:
   cached_network_image: ^3.2.1
   photo_view: ^0.14.0
   date_format: ^2.0.6
+  flutter_platform_widgets: ^2.0.0
+  image_picker: ^0.8.5+3
+  flutter_html: ^3.0.0-alpha.5
 
 
 dev_dependencies:

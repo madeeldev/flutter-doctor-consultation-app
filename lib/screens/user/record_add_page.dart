@@ -138,6 +138,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
     _weightCtrl.dispose();
     _waistCtrl.dispose();
     _dateTimeCtrl.dispose();
+    internetSubscription.cancel();
     super.dispose();
   }
 

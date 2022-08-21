@@ -1,13 +1,32 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
 import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
+import 'package:flutter_hami/screens/user/ask_us_page.dart';
 import 'package:flutter_hami/screens/user/awareness_material_page.dart';
 import 'package:flutter_hami/screens/user/members_page.dart';
+import 'package:flutter_hami/screens/user/notification_page.dart';
 import 'package:flutter_hami/screens/user/record_page.dart';
 import 'package:badges/badges.dart';
-import 'package:flutter_hami/screens/user/userMaterial/medicine_page.dart';
+import 'package:flutter_hami/screens/user/medicine_page.dart';
+import 'package:flutter_hami/services/member_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+
+import '../widget/connectivity_banner.dart';
+
+enum UserClickMenu {
+  onClickNotification,
+  onClickMembers,
+  onClickRecord,
+  onClickAwarenessMaterial,
+  onClickMedicine,
+  onClickAskUs,
+  onClickLogout,
+}
 
 class DashboardPage extends StatefulWidget {
   final String mobile;
@@ -18,6 +37,60 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  // notifications count
+  int? _notificationCount;
+
+  // has internet
+  late StreamSubscription internetSubscription;
+
+  @override
+  void initState() {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+      if (!hasInternet) {
+        connectivityBanner(context, 'No internet connection.',
+            () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
+    // load notifications data
+    _loadNotificationData();
+    super.initState();
+  }
+
+  // check internet
+  Future<bool> _hasInternetConnection() async {
+    return await InternetConnectionChecker().hasConnection;
+  }
+
+  _loadNotificationData() async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if (hasInternet) {
+      final result = await MemberService().onLoadMemberNotifications(
+        widget.mobile,
+      );
+      final message = result['message'];
+      if (message == 'success') {
+        final data = result['data'];
+        final newData = data.where((n) => n['HAA_IsViewed'] == false).toList();
+        _notificationCount = newData.isNotEmpty ? newData.length : null;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    internetSubscription.cancel();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -55,13 +128,17 @@ class _DashboardPageState extends State<DashboardPage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () =>
+                          _handleUserClick(UserClickMenu.onClickNotification),
                       borderRadius: BorderRadius.circular(10),
                       child: Badge(
-                        badgeContent: const Text(
-                          '3',
-                          style: TextStyle(color: Colors.black),
-                        ),
+                        showBadge: _notificationCount != null ? true : false,
+                        badgeContent: _notificationCount != null
+                            ? Text(
+                                '$_notificationCount',
+                                style: const TextStyle(color: Colors.black),
+                              )
+                            : null,
                         animationType: BadgeAnimationType.scale,
                         badgeColor: Colors.greenAccent,
                         child: SizedBox(
@@ -84,8 +161,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Container(
-                                    height: 6,
-                                    width: 6,
+                                    height: 5,
+                                    width: 5,
                                     decoration: const BoxDecoration(
                                       color: Colors.red,
                                       shape: BoxShape.circle,
@@ -172,7 +249,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: _onPressedMembers,
+                          onTap: () =>
+                              _handleUserClick(UserClickMenu.onClickMembers),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -219,7 +297,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: _onPressedRecord,
+                          onTap: () =>
+                              _handleUserClick(UserClickMenu.onClickRecord),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -274,7 +353,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: _onPressedAwarenessMaterial,
+                          onTap: () => _handleUserClick(
+                              UserClickMenu.onClickAwarenessMaterial),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -329,7 +409,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: _onPressedMedicine,
+                          onTap: () =>
+                              _handleUserClick(UserClickMenu.onClickMedicine),
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
@@ -387,7 +468,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: () {},
+                          onTap: () =>
+                              _handleUserClick(UserClickMenu.onClickAskUs),
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
@@ -435,7 +517,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: _onPressedLogout,
+                          onTap: () =>
+                              _handleUserClick(UserClickMenu.onClickLogout),
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
@@ -479,6 +562,41 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  _handleUserClick(UserClickMenu menu) async {
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if (hasInternet) {
+      switch (menu) {
+        case UserClickMenu.onClickNotification:
+          _onPressedNotification();
+          break;
+        case UserClickMenu.onClickMembers:
+          _onPressedMembers();
+          break;
+        case UserClickMenu.onClickRecord:
+          _onPressedRecord();
+          break;
+        case UserClickMenu.onClickAwarenessMaterial:
+          _onPressedAwarenessMaterial();
+          break;
+        case UserClickMenu.onClickMedicine:
+          _onPressedMedicine();
+          break;
+        case UserClickMenu.onClickAskUs:
+          _onPressedAskUs();
+          break;
+        case UserClickMenu.onClickLogout:
+          _onPressedLogout();
+          break;
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'No internet connection',
+        toastLength: Toast.LENGTH_LONG,
+      );
+    }
+  }
+
   //
   _onPressedMembers() {
     Navigator.push(
@@ -514,12 +632,37 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
   }
+
   //
   _onPressedMedicine() {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => MedicinePage(
+          mobile: widget.mobile,
+        ),
+      ),
+    );
+  }
+
+  //
+  _onPressedAskUs() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AskUsPage(
+          mobile: widget.mobile,
+        ),
+      ),
+    );
+  }
+
+  //
+  _onPressedNotification() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NotificationPage(
           mobile: widget.mobile,
         ),
       ),

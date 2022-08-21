@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:photo_view/photo_view.dart';
 
 import '../../../services/awareness_data_service.dart';
+import '../../../widget/connectivity_banner.dart';
 
 const kColorBg = Colors.white;
 
@@ -20,27 +24,62 @@ class _BpRamazanState extends State<BpRamazanPage> {
   bool _isGridview = true;
   List _imagesData = [];
 
+  // has internet
+  late StreamSubscription internetSubscription;
+
   @override
   void initState() {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
+          final hasInternet = status == InternetConnectionStatus.connected;
+          if (!hasInternet) {
+            connectivityBanner(context, 'No internet connection.',
+                    () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+          } else {
+            ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+          }
+        });
+    // load data
     _initData();
     super.initState();
   }
 
+  // check internet
+  Future<bool> _hasInternetConnection() async {
+    return await InternetConnectionChecker().hasConnection;
+  }
+
   _initData() async {
-    final data = await AwarenessDataService().loadData(widget.mobile);
-    final message = data['message'];
-    final materialData = data['data'];
-    if (message == 'success') {
-      final bpRamazanImages =
-          materialData.where((e) => e['HAM_Type'] == 3).toList();
-      if (mounted) {
-        setState(() {
-          _isPageLoaded = true;
-          _imagesData = bpRamazanImages;
-        });
+    // check internet connectivity
+    final hasInternet = await _hasInternetConnection();
+    if (hasInternet) {
+      final data = await AwarenessDataService().loadData(widget.mobile);
+      final message = data['message'];
+      final materialData = data['data'];
+      if (message == 'success') {
+        final bpRamazanImages =
+        materialData.where((e) => e['HAM_Type'] == 3).toList();
+        if (mounted) {
+          setState(() {
+            _isPageLoaded = true;
+            _imagesData = bpRamazanImages;
+          });
+        }
       }
+    } else {
+      setState(() {
+        _isPageLoaded = true;
+      });
     }
   }
+
+  @override
+  void dispose() {
+    internetSubscription.cancel();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {

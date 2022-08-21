@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/screens/dashboard_page.dart';
@@ -6,8 +8,11 @@ import 'package:flutter_hami/screens/user/userMaterial/bp_ramazan_page.dart';
 import 'package:flutter_hami/screens/user/userMaterial/diet_chart_page.dart';
 import 'package:flutter_hami/screens/user/userMaterial/videos_page.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../colors.dart';
+import '../../widget/connectivity_banner.dart';
 
 const kColorBg = Color(0xfff2f6fe);
 
@@ -56,6 +61,36 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
       'action': TileType.bloodPressureHeartDisease
     },
   ];
+
+  // has internet
+  late StreamSubscription internetSubscription;
+
+  @override
+  void initState() {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+      if (!hasInternet) {
+        connectivityBanner(context, 'No internet connection.',
+            () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+      }
+    });
+    super.initState();
+  }
+
+  // check internet
+  Future<bool> _hasInternetConnection() async {
+    return await InternetConnectionChecker().hasConnection;
+  }
+
+  @override
+  void dispose() {
+    internetSubscription.cancel();
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -196,9 +231,20 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
                       borderRadius: BorderRadius.all(
                         Radius.circular((size.height * 0.01)),
                       ),
-                      onTap: () => _onTapGridTile(
-                        _actionLabel[idx]['action'] as TileType,
-                      ),
+                      onTap: () async {
+                        // check internet connectivity
+                        final hasInternet = await _hasInternetConnection();
+                        if (hasInternet) {
+                          onPressedGridTile(
+                            _actionLabel[idx]['action'] as TileType,
+                          );
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: 'No internet connection',
+                            toastLength: Toast.LENGTH_LONG,
+                          );
+                        }
+                      },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -288,14 +334,15 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
   }
 
   //
-  _onTapGridTile(TileType action) {
-    debugPrint(action.toString());
+  onPressedGridTile(TileType action) {
     switch (action) {
       case TileType.videos:
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideosPage(mobile: widget.mobile,),
+            builder: (context) => VideosPage(
+              mobile: widget.mobile,
+            ),
           ),
         );
         break;
@@ -303,7 +350,9 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DietChartPage(mobile: widget.mobile,),
+            builder: (context) => DietChartPage(
+              mobile: widget.mobile,
+            ),
           ),
         );
         break;
@@ -311,7 +360,9 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BpRamazanPage(mobile: widget.mobile,),
+            builder: (context) => BpRamazanPage(
+              mobile: widget.mobile,
+            ),
           ),
         );
         break;
@@ -319,7 +370,9 @@ class _AwarenessMaterialPageState extends State<AwarenessMaterialPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BPHeartDiseasePage(mobile: widget.mobile,),
+            builder: (context) => BPHeartDiseasePage(
+              mobile: widget.mobile,
+            ),
           ),
         );
         break;

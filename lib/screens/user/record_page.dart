@@ -144,6 +144,13 @@ class _RecordPageState extends State<RecordPage> {
   }
 
   @override
+  void dispose() {
+    internetSubscription.cancel();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
@@ -320,7 +327,10 @@ class _RecordPageState extends State<RecordPage> {
                         ),
                         child: Container(
                           padding: const EdgeInsets.only(
-                              top: 5, left: 15, bottom: 10),
+                            top: 5,
+                            left: 15,
+                            bottom: 10,
+                          ),
                           decoration: const BoxDecoration(
                             border: Border(
                               left: BorderSide(
@@ -799,6 +809,7 @@ class _RecordPageState extends State<RecordPage> {
       });
     }
   }
+
   //
   Future<String> _onPostRemoveMemberRecord(int recordId) async {
     // check internet connectivity
@@ -816,7 +827,8 @@ class _RecordPageState extends State<RecordPage> {
   _onDoneRemoveMemberRecord(int recordId) {
     Navigator.of(context).pop();
     setState(() {
-      _memberRecordData = List.from(_memberRecordData)..removeWhere((record) => record['HPD_ID'] == recordId);
+      _memberRecordData = List.from(_memberRecordData)
+        ..removeWhere((record) => record['HPD_ID'] == recordId);
     });
   }
 }
