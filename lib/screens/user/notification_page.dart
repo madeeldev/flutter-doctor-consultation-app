@@ -85,7 +85,6 @@ class _NotificationPageState extends State<NotificationPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: kColorBg,
-      drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.zero,
         child: AppBar(

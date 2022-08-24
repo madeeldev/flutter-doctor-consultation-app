@@ -92,7 +92,6 @@ class _VideosPageState extends State<VideosPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: kColorPrimary,
-      drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.zero,
         child: AppBar(

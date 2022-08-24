@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "767130457964",
+    "project_id": "flutter-hami",
+    "storage_bucket": "flutter-hami.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767130457964:android:93ce2da648ece9df048549",
+        "android_client_info": {
+          "package_name": "com.adeel.flutter_hami"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "767130457964-mkg3lidmbs9h5ikfc2elq2q4l43ev12j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5JLyS2s2Ba5GWusaCalpffL6mOsX6ynQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "767130457964-mkg3lidmbs9h5ikfc2elq2q4l43ev12j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -41,14 +41,14 @@ class _RecordAddPageState extends State<RecordAddPage> {
   DateTime _dateTime = DateTime.now();
 
   // controllers
-  final _sBPCtrl = TextEditingController(text: '120');
-  final _dBPCtrl = TextEditingController(text: '120');
-  final _heartRateCtrl = TextEditingController(text: '120');
-  final _bloodGlucoseCtrl = TextEditingController(text: '120');
-  final _heightCtrl = TextEditingController(text: '120');
-  final _weightCtrl = TextEditingController(text: '120');
-  final _waistCtrl = TextEditingController(text: '120');
-  final _dateTimeCtrl = TextEditingController(text: '120');
+  final _sBPCtrl = TextEditingController();
+  final _dBPCtrl = TextEditingController();
+  final _heartRateCtrl = TextEditingController();
+  final _bloodGlucoseCtrl = TextEditingController();
+  final _heightCtrl = TextEditingController();
+  final _weightCtrl = TextEditingController();
+  final _waistCtrl = TextEditingController();
+  final _dateTimeCtrl = TextEditingController();
 
   // data
   List<dynamic> _membersData = [];
@@ -151,7 +151,6 @@ class _RecordAddPageState extends State<RecordAddPage> {
       },
       child: Scaffold(
         backgroundColor: kColorBg,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(

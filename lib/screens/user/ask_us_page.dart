@@ -109,7 +109,6 @@ class _AskUsPageState extends State<AskUsPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(

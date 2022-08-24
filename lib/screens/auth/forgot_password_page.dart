@@ -26,7 +26,7 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   // controller
-  final _phoneNumberCtrl = TextEditingController(text: '3007918427');
+  final _phoneNumberCtrl = TextEditingController();
 
   // errorMessages
   String _phoneNumberErrMsg = '';
@@ -89,7 +89,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.zero,
         child: AppBar(

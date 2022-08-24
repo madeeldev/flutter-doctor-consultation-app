@@ -125,7 +125,6 @@ class _VerifyPinPageState extends State<VerifyPinPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(

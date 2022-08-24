@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hami/model/shared_preference.dart';
 import 'package:flutter_hami/screens/auth/login_page.dart';
 import 'package:flutter_hami/screens/auth/verify_pin_page.dart';
+import 'package:flutter_hami/screens/privacy_policy_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ import '../../model/user_model.dart';
 import '../../services/auth_service.dart';
 import '../../widget/connectivity_banner.dart';
 import '../../widget/show_dialog.dart';
+import '../terms_and_conditions_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -30,7 +32,6 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-
   final _signupFormKey = GlobalKey<FormState>();
 
   List _dropdownItems = [];
@@ -41,11 +42,11 @@ class _SignupPageState extends State<SignupPage> {
   String _cityErrMsg = '';
 
   // controllers
-  final _nameCtrl = TextEditingController(text: 'Adeel');
-  final _phoneNumberCtrl = TextEditingController(text: '3007918427');
-  final _emailCtrl = TextEditingController(text: 'muhammad.adeel@highnoon.com.pk');
-  final _passwordCtrl = TextEditingController(text: 'abc123');
-  final _confirmPassCtrl = TextEditingController(text: 'abc123');
+  final _nameCtrl = TextEditingController();
+  final _phoneNumberCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  final _confirmPassCtrl = TextEditingController();
 
   // show password
   bool _showPassword = false;
@@ -61,12 +62,12 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   initState() {
-    internetSubscription = InternetConnectionChecker().onStatusChange.listen((status) {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
       final hasInternet = status == InternetConnectionStatus.connected;
-      if(!hasInternet) {
+      if (!hasInternet) {
         connectivityBanner(context, 'No internet connection.',
-          () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner()
-        );
+            () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
       } else {
         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
       }
@@ -97,17 +98,18 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   // validators
-  String? _validateName(val){
-    if(val == null || val.isEmpty) {
+  String? _validateName(val) {
+    if (val == null || val.isEmpty) {
       return 'Name is required';
     }
     return null;
   }
+
   _validatePhoneNumber(String? val) {
     setState(() {
-      if(val != null && val.isNotEmpty) {
-        if(RegExp(r'^[0-9]*$').hasMatch(val)) {
-          if(val.length == 10) {
+      if (val != null && val.isNotEmpty) {
+        if (RegExp(r'^[0-9]*$').hasMatch(val)) {
+          if (val.length == 10) {
             _phoneNumberErrMsg = '';
           } else {
             _phoneNumberErrMsg = 'Invalid phone number length';
@@ -120,36 +122,40 @@ class _SignupPageState extends State<SignupPage> {
       }
     });
   }
+
   String? _validateEmail(String? val) {
-    if(val == null || val.isEmpty) {
+    if (val == null || val.isEmpty) {
       return 'Email is required';
     }
-    if(!EmailValidator.validate(val)) {
+    if (!EmailValidator.validate(val)) {
       return 'Please enter valid email';
     }
     return null;
   }
-  String? _validatePassword (String? val){
-    if(val == null || val.isEmpty) {
+
+  String? _validatePassword(String? val) {
+    if (val == null || val.isEmpty) {
       return 'Password is required';
     }
-    if(val.length < 4) {
+    if (val.length < 4) {
       return 'Password must be at least 5 characters long';
     }
     return null;
   }
-  String? _validateConfirmPassword (String? val){
-    if(val == null || val.isEmpty) {
+
+  String? _validateConfirmPassword(String? val) {
+    if (val == null || val.isEmpty) {
       return 'Confirm is required';
     }
-    if(_passwordCtrl.value.text != val) {
+    if (_passwordCtrl.value.text != val) {
       return 'Confirmation password does not match';
     }
     return null;
   }
+
   _validateCity() {
     setState(() {
-      if(_selectedCity != null && _selectedCity!.isNotEmpty) {
+      if (_selectedCity != null && _selectedCity!.isNotEmpty) {
         _cityErrMsg = '';
       } else {
         _cityErrMsg = 'Selection of City is required';
@@ -187,7 +193,6 @@ class _SignupPageState extends State<SignupPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.zero,
         child: AppBar(
@@ -220,7 +225,8 @@ class _SignupPageState extends State<SignupPage> {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
                                 builder: (context) => const LoginPage(),
-                              ), (Route<dynamic> route) => false,
+                              ),
+                              (Route<dynamic> route) => false,
                             );
                           },
                           child: const Icon(
@@ -235,16 +241,16 @@ class _SignupPageState extends State<SignupPage> {
                             child: const Text(
                               'Signup',
                               style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 18
-                              ),
+                                  fontWeight: FontWeight.w500, fontSize: 18),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: size.height * 0.05,),
+                  SizedBox(
+                    height: size.height * 0.05,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Stack(
@@ -257,10 +263,7 @@ class _SignupPageState extends State<SignupPage> {
                               BoxShadow(
                                 color: kColorPrimary.withOpacity(0.2),
                                 blurRadius: 1,
-                                offset: const Offset(
-                                    0.0,
-                                    3
-                                ),
+                                offset: const Offset(0.0, 3),
                               ),
                             ],
                             borderRadius: BorderRadius.circular(5),
@@ -271,11 +274,13 @@ class _SignupPageState extends State<SignupPage> {
                           cursorColor: Colors.black,
                           decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             hintText: 'Full Name',
                           ),
@@ -285,7 +290,9 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const  SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Stack(
@@ -298,10 +305,7 @@ class _SignupPageState extends State<SignupPage> {
                               BoxShadow(
                                 color: kColorPrimary.withOpacity(0.2),
                                 blurRadius: 1,
-                                offset: const Offset(
-                                    0.0,
-                                    3
-                                ),
+                                offset: const Offset(0.0, 3),
                               ),
                             ],
                             borderRadius: BorderRadius.circular(5),
@@ -315,26 +319,33 @@ class _SignupPageState extends State<SignupPage> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                                border: Border.all(
+                                  color: kColorPrimary,
+                                  width: kInputBorderWidth,
+                                  style: BorderStyle.solid,
+                                ),
                               ),
                               child: Row(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
                                     child: GestureDetector(
                                       onTap: () {
-                                        FocusScope.of(context).requestFocus(_phoneNumberNode);
+                                        FocusScope.of(context)
+                                            .requestFocus(_phoneNumberNode);
                                       },
                                       child: Row(
                                         children: [
                                           Container(
                                             alignment: Alignment.center,
-                                            padding: const EdgeInsets.only(bottom: 1),
+                                            padding: const EdgeInsets.only(
+                                                bottom: 1),
                                             child: Text(
                                               '+',
                                               style: TextStyle(
                                                 color: kColorPrimary,
-                                                fontSize: size.width*0.038,
+                                                fontSize: size.width * 0.038,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -343,7 +354,7 @@ class _SignupPageState extends State<SignupPage> {
                                             '92',
                                             style: TextStyle(
                                               color: kColorPrimary,
-                                              fontSize: size.width*0.035,
+                                              fontSize: size.width * 0.035,
                                               fontWeight: FontWeight.bold,
                                               letterSpacing: 0.5,
                                             ),
@@ -358,7 +369,8 @@ class _SignupPageState extends State<SignupPage> {
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15),
                                       child: TextFormField(
                                         focusNode: _phoneNumberNode,
                                         controller: _phoneNumberCtrl,
@@ -369,9 +381,9 @@ class _SignupPageState extends State<SignupPage> {
                                         cursorColor: Colors.black,
                                         decoration: const InputDecoration(
                                             border: InputBorder.none,
-                                            hintText: 'Phone Number'
-                                        ),
-                                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                                            hintText: 'Phone Number'),
+                                        autovalidateMode:
+                                            AutovalidateMode.onUserInteraction,
                                         onChanged: _validatePhoneNumber,
                                       ),
                                     ),
@@ -380,10 +392,11 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             Container(
-                              height: _phoneNumberErrMsg.isEmpty ? 0: null,
+                              height: _phoneNumberErrMsg.isEmpty ? 0 : null,
                               alignment: Alignment.centerLeft,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 6, left: 16),
+                                padding:
+                                    const EdgeInsets.only(top: 6, left: 16),
                                 child: Text(
                                   _phoneNumberErrMsg,
                                   style: const TextStyle(
@@ -398,7 +411,9 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const  SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Stack(
@@ -411,10 +426,7 @@ class _SignupPageState extends State<SignupPage> {
                               BoxShadow(
                                 color: kColorPrimary.withOpacity(0.2),
                                 blurRadius: 1,
-                                offset: const Offset(
-                                    0.0,
-                                    3
-                                ),
+                                offset: const Offset(0.0, 3),
                               ),
                             ],
                             borderRadius: BorderRadius.circular(5),
@@ -426,11 +438,13 @@ class _SignupPageState extends State<SignupPage> {
                           keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             hintText: 'Email',
                           ),
@@ -440,7 +454,9 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const  SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Stack(
@@ -453,10 +469,7 @@ class _SignupPageState extends State<SignupPage> {
                               BoxShadow(
                                 color: kColorPrimary.withOpacity(0.2),
                                 blurRadius: 1,
-                                offset: const Offset(
-                                    0.0,
-                                    3
-                                ),
+                                offset: const Offset(0.0, 3),
                               ),
                             ],
                             borderRadius: BorderRadius.circular(5),
@@ -468,15 +481,18 @@ class _SignupPageState extends State<SignupPage> {
                           obscureText: _showPassword ? false : true,
                           decoration: InputDecoration(
                             enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             border: const OutlineInputBorder(),
                             focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             hintText: 'Password',
                             suffix: GestureDetector(
-                              onTap: () => setState(() => _showPassword = !_showPassword),
+                              onTap: () => setState(
+                                  () => _showPassword = !_showPassword),
                               child: Text(
                                 _showPassword ? 'Hide' : 'Show',
                               ),
@@ -492,7 +508,9 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const  SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Stack(
@@ -505,10 +523,7 @@ class _SignupPageState extends State<SignupPage> {
                               BoxShadow(
                                 color: kColorPrimary.withOpacity(0.2),
                                 blurRadius: 1,
-                                offset: const Offset(
-                                    0.0,
-                                    3
-                                ),
+                                offset: const Offset(0.0, 3),
                               ),
                             ],
                             borderRadius: BorderRadius.circular(5),
@@ -520,11 +535,13 @@ class _SignupPageState extends State<SignupPage> {
                           obscureText: true,
                           decoration: const InputDecoration(
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: kColorPrimary, width: 1),
+                              borderSide:
+                                  BorderSide(color: kColorPrimary, width: 1),
                             ),
                             hintText: 'Confirm Password',
                           ),
@@ -534,7 +551,9 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const  SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Stack(
@@ -547,10 +566,7 @@ class _SignupPageState extends State<SignupPage> {
                               BoxShadow(
                                 color: kColorPrimary.withOpacity(0.2),
                                 blurRadius: 1,
-                                offset: const Offset(
-                                    0.0,
-                                    3
-                                ),
+                                offset: const Offset(0.0, 3),
                               ),
                             ],
                             borderRadius: BorderRadius.circular(5),
@@ -564,10 +580,15 @@ class _SignupPageState extends State<SignupPage> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                                border: Border.all(
+                                  color: kColorPrimary,
+                                  width: kInputBorderWidth,
+                                  style: BorderStyle.solid,
+                                ),
                               ),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     hint: const Text('Select City'),
@@ -591,10 +612,11 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             Container(
-                              height: _cityErrMsg.isEmpty ? 0: null,
+                              height: _cityErrMsg.isEmpty ? 0 : null,
                               alignment: Alignment.centerLeft,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 6, left: 16),
+                                padding:
+                                    const EdgeInsets.only(top: 6, left: 16),
                                 child: Text(
                                   _cityErrMsg,
                                   style: const TextStyle(
@@ -609,14 +631,17 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const  SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Row(
                       children: [
                         Checkbox(
                           checkColor: Colors.white,
-                          fillColor: MaterialStateProperty.resolveWith(getColor),
+                          fillColor:
+                              MaterialStateProperty.resolveWith(getColor),
                           value: _isChecked,
                           onChanged: (bool? value) {
                             setState(() {
@@ -637,24 +662,36 @@ class _SignupPageState extends State<SignupPage> {
                                 'I have read and agree to all',
                               ),
                             ),
-                            const SizedBox(height: 3,),
+                            const SizedBox(
+                              height: 3,
+                            ),
                             Row(
                               children: [
-                                Text(
-                                  'Terms & Conditions',
-                                  style: TextStyle(
-                                      color: Colors.blueAccent,
-                                      fontSize: size.width*0.035,
-                                      letterSpacing: 0.5
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const TermsAndConditionsPage(),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Terms & Conditions',
+                                    style: TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: size.width * 0.035,
+                                        letterSpacing: 0.5),
                                   ),
                                 ),
                                 const Text(' and '),
-                                Text(
-                                  'Privacy Policy',
-                                  style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontSize: size.width*0.035,
-                                    letterSpacing: 0.5
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const PrivacyPolicyPage())),
+                                  child: Text(
+                                    'Privacy Policy',
+                                    style: TextStyle(
+                                      color: Colors.blueAccent,
+                                      fontSize: size.width * 0.035,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -664,7 +701,9 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Material(
@@ -688,20 +727,39 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Already have an account ? ', style: TextStyle(fontSize: 13, color: Color(0xff2d2d2d), fontWeight: FontWeight.bold),),
+                      const Text(
+                        'Already have an account ? ',
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xff2d2d2d),
+                            fontWeight: FontWeight.bold),
+                      ),
                       GestureDetector(
                         onTap: () => {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()))
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()))
                         },
-                        child: const Text('Log-in', style: TextStyle(fontSize: 15, color: kColorPrimary, fontWeight: FontWeight.bold),),
+                        child: const Text(
+                          'Log-in',
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: kColorPrimary,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
                 ]),
               ),
             ],
@@ -714,27 +772,28 @@ class _SignupPageState extends State<SignupPage> {
   // custom validate form
   bool _customValidateForm() {
     // phone number
-    if(_phoneNumberCtrl.value.text.isEmpty) {
+    if (_phoneNumberCtrl.value.text.isEmpty) {
       // required
       return false;
     } else {
       // not a number
-      if(RegExp(r'^[a-z]+$').hasMatch(_phoneNumberCtrl.value.text)) {
+      if (RegExp(r'^[a-z]+$').hasMatch(_phoneNumberCtrl.value.text)) {
         return false;
       } else {
         // invalid length
-        if(_phoneNumberCtrl.value.text.length < 10) {
+        if (_phoneNumberCtrl.value.text.length < 10) {
           return false;
         }
       }
     }
     // city
-    if(_selectedCity == null || _selectedCity!.isEmpty) {
+    if (_selectedCity == null || _selectedCity!.isEmpty) {
       // required
       return false;
     }
     return true;
   }
+
   //
   _onPressedSignup() {
     // custom inputs error messages
@@ -746,10 +805,10 @@ class _SignupPageState extends State<SignupPage> {
     // if validated
     if (customValidation && formValidation) {
       // check for term & conditions
-      if(!_isChecked) {
+      if (!_isChecked) {
         Fluttertoast.showToast(
-            msg: "Please tick the checkbox to accept our customer agreements",
-            toastLength: Toast.LENGTH_SHORT,
+          msg: "Please tick the checkbox to accept our customer agreements",
+          toastLength: Toast.LENGTH_SHORT,
         );
       } else {
         showDialogBox(context);
@@ -761,10 +820,10 @@ class _SignupPageState extends State<SignupPage> {
               msg: 'User with this mobile already exist.',
               toastLength: Toast.LENGTH_SHORT,
             );
-          } else if(message == 'User not found!') {
+          } else if (message == 'User not found!') {
             _onSendVerificationCodeMessage().then((postRes) {
               final sendMessage = postRes['message'];
-              if(sendMessage == 'Success!') {
+              if (sendMessage == 'Success!') {
                 // create user
                 final randomPin = postRes['randomPin'];
                 UserModel user = UserModel(
@@ -778,7 +837,8 @@ class _SignupPageState extends State<SignupPage> {
                 SharedPreference().saveUser(user).then((_) {
                   Navigator.pop(context);
                   Fluttertoast.showToast(
-                    msg: 'Check your text message on 92${_phoneNumberCtrl.text}',
+                    msg:
+                        'Check your text message on 92${_phoneNumberCtrl.text}',
                     toastLength: Toast.LENGTH_LONG,
                   );
                   Navigator.of(context).push(
@@ -810,42 +870,41 @@ class _SignupPageState extends State<SignupPage> {
   Future<Map<String, String>> _onVerifyUser() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
-    if(hasInternet) {
+    if (hasInternet) {
       final mobile = '92${_phoneNumberCtrl.value.text}';
       final user = UserModel(
         userMobile: mobile,
       );
       final res = await AuthService().onVerifyUser(user, true);
       return {
-        'message' : res,
+        'message': res,
       };
     }
     return {
-      'message' : 'No internet connection',
+      'message': 'No internet connection',
     };
   }
+
   //
   Future<Map<String, dynamic>> _onSendVerificationCodeMessage() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
-    if(hasInternet) {
+    if (hasInternet) {
       final String randomPin = _getRandomPin().toString();
-      final String randomPinStr = 'Your%20PIN%20for%20HAMI%20App%20is%20$randomPin.';
+      final String randomPinStr =
+          'Your%20PIN%20for%20HAMI%20App%20is%20$randomPin.';
       final mobile = '92${_phoneNumberCtrl.value.text}';
       String res = await AuthService().sendTextMessage(mobile, randomPinStr);
-      return {
-        'message': res,
-        'randomPin': randomPin
-      };
+      return {'message': res, 'randomPin': randomPin};
     }
     return {
-      'message' : 'No internet connection',
+      'message': 'No internet connection',
     };
   }
+
   //
   int _getRandomPin() {
     var rnd = math.Random();
     return rnd.nextInt(1000) + 1000;
   }
 }
-

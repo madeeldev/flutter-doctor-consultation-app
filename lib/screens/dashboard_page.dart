@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_hami/screens/user/record_page.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter_hami/screens/user/medicine_page.dart';
 import 'package:flutter_hami/services/member_service.dart';
+import 'package:flutter_hami/services/notification_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -25,12 +27,13 @@ enum UserClickMenu {
   onClickAwarenessMaterial,
   onClickMedicine,
   onClickAskUs,
-  onClickLogout,
 }
 
 class DashboardPage extends StatefulWidget {
   final String mobile;
-  const DashboardPage({required this.mobile, Key? key}) : super(key: key);
+  const DashboardPage({
+    required this.mobile,
+    Key? key}) : super(key: key);
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -57,6 +60,7 @@ class _DashboardPageState extends State<DashboardPage> {
     });
     // load notifications data
     _loadNotificationData();
+    _handleAppNotifications();
     super.initState();
   }
 
@@ -84,6 +88,29 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  _handleAppNotifications() {
+    // only works when app is terminated
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        debugPrint('✅ FUNCTION CALLED: getInitialMessage');
+      }
+    });
+    //
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('✅ FUNCTION CALLED: onMessage');
+      NotificationService.display(message);
+    });
+    // only works if app in background but not terminated
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      debugPrint('✅ FUNCTION CALLED: onMessageOpenedApp');
+      RemoteNotification? remoteNotification = message.notification;
+      AndroidNotification? androidNotification = message.notification?.android;
+      if(remoteNotification != null && androidNotification != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationPage(mobile: '923007918427')));
+      }
+    });
+  }
+
   @override
   void dispose() {
     internetSubscription.cancel();
@@ -95,7 +122,6 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      drawer: const Drawer(),
       appBar: PreferredSize(
         preferredSize: Size.zero,
         child: AppBar(
@@ -517,8 +543,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          onTap: () =>
-                              _handleUserClick(UserClickMenu.onClickLogout),
+                          onTap: _onPressedLogout,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Column(
@@ -584,9 +609,6 @@ class _DashboardPageState extends State<DashboardPage> {
           break;
         case UserClickMenu.onClickAskUs:
           _onPressedAskUs();
-          break;
-        case UserClickMenu.onClickLogout:
-          _onPressedLogout();
           break;
       }
     } else {

@@ -159,7 +159,6 @@ class _RecordPageState extends State<RecordPage> {
       },
       child: Scaffold(
         backgroundColor: kColorBg,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(

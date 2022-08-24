@@ -151,7 +151,6 @@ class _MembersPageState extends State<MembersPage> {
       },
       child: Scaffold(
         backgroundColor: kColorBg,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(

@@ -153,7 +153,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: Scaffold(
         backgroundColor: kColorBg,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(

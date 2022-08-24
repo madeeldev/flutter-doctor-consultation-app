@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
@@ -24,15 +26,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final _loginFormKey = GlobalKey<FormState>();
 
   // errorMessages
   String _phoneNumberErrMsg = '';
 
   // controllers
-  final _phoneNumberCtrl = TextEditingController(text: '3007918427');
-  final _passwordCtrl = TextEditingController(text: 'abc123');
+  final _phoneNumberCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
 
   // show password
   bool _showPassword = false;
@@ -45,10 +46,12 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   initState() {
-    internetSubscription = InternetConnectionChecker().onStatusChange.listen((status) {
+    internetSubscription =
+        InternetConnectionChecker().onStatusChange.listen((status) {
       final hasInternet = status == InternetConnectionStatus.connected;
-      if(!hasInternet) {
-        connectivityBanner(context, 'No internet connection.', () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
+      if (!hasInternet) {
+        connectivityBanner(context, 'No internet connection.',
+            () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner());
       } else {
         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
       }
@@ -65,9 +68,9 @@ class _LoginPageState extends State<LoginPage> {
   // validators
   _validatePhoneNumber(String? val) {
     setState(() {
-      if(val != null && val.isNotEmpty) {
-        if(RegExp(r'^[0-9]*$').hasMatch(val)) {
-          if(val.length == 10) {
+      if (val != null && val.isNotEmpty) {
+        if (RegExp(r'^[0-9]*$').hasMatch(val)) {
+          if (val.length == 10) {
             _phoneNumberErrMsg = '';
           } else {
             _phoneNumberErrMsg = 'Invalid phone number length';
@@ -80,11 +83,12 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
   }
-  String? _validatePassword (String? val){
-    if(val == null || val.isEmpty) {
+
+  String? _validatePassword(String? val) {
+    if (val == null || val.isEmpty) {
       return 'Password is required';
     }
-    if(val.length < 4) {
+    if (val.length < 4) {
       return 'Password must be at least 5 characters long';
     }
     return null;
@@ -124,16 +128,16 @@ class _LoginPageState extends State<LoginPage> {
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: const Drawer(),
         appBar: PreferredSize(
           preferredSize: Size.zero,
           child: AppBar(
             elevation: 0,
-            backgroundColor: Colors.white,//ios status bar colors
+            backgroundColor: Colors.white, //ios status bar colors
             systemOverlayStyle: const SystemUiOverlayStyle(
-              statusBarColor: Colors.white,//android status bar color
+              statusBarColor: Colors.white, //android status bar color
               statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-              statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
+              statusBarIconBrightness:
+                  Brightness.dark, // For Android: (dark icons)
             ),
           ),
         ),
@@ -156,7 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: SizedBox(
                           width: size.width,
-                          height: 60,
                           child: Stack(
                             children: [
                               Container(
@@ -167,10 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                                     BoxShadow(
                                       color: kColorPrimary.withOpacity(0.2),
                                       blurRadius: 1,
-                                      offset: const Offset(
-                                          0.0,
-                                          3
-                                      ),
+                                      offset: const Offset(0.0, 3),
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(5),
@@ -184,27 +184,38 @@ class _LoginPageState extends State<LoginPage> {
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(5),
-                                      border: Border.all(color: kColorPrimary, width: kInputBorderWidth, style: BorderStyle.solid,),
+                                      border: Border.all(
+                                        color: kColorPrimary,
+                                        width: kInputBorderWidth,
+                                        style: BorderStyle.solid,
+                                      ),
                                     ),
                                     child: Row(
                                       children: [
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
                                           child: GestureDetector(
                                             onTap: () {
-                                              FocusScope.of(context).requestFocus(_phoneNumberNode);
+                                              FocusScope.of(context)
+                                                  .requestFocus(
+                                                      _phoneNumberNode);
                                             },
                                             child: Row(
                                               children: [
                                                 Container(
                                                   alignment: Alignment.center,
-                                                  padding: const EdgeInsets.only(bottom: 1),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 1),
                                                   child: Text(
                                                     '+',
                                                     style: TextStyle(
                                                       color: kColorPrimary,
-                                                      fontSize: size.width*0.038,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontSize:
+                                                          size.width * 0.038,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
@@ -212,7 +223,8 @@ class _LoginPageState extends State<LoginPage> {
                                                   '92',
                                                   style: TextStyle(
                                                     color: kColorPrimary,
-                                                    fontSize: size.width*0.035,
+                                                    fontSize:
+                                                        size.width * 0.035,
                                                     fontWeight: FontWeight.bold,
                                                     letterSpacing: 0.5,
                                                   ),
@@ -227,20 +239,23 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                         Expanded(
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
                                             child: TextFormField(
                                               focusNode: _phoneNumberNode,
                                               controller: _phoneNumberCtrl,
-                                              keyboardType: TextInputType.number,
+                                              keyboardType:
+                                                  TextInputType.number,
                                               inputFormatters: [
-                                                LengthLimitingTextInputFormatter(10),
+                                                LengthLimitingTextInputFormatter(
+                                                    10),
                                               ],
                                               cursorColor: Colors.black,
                                               decoration: const InputDecoration(
                                                   border: InputBorder.none,
-                                                  hintText: 'Phone Number'
-                                              ),
-                                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                  hintText: 'Phone Number'),
+                                              autovalidateMode: AutovalidateMode
+                                                  .onUserInteraction,
                                               onChanged: _validatePhoneNumber,
                                             ),
                                           ),
@@ -249,10 +264,12 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                   Container(
-                                    height: _phoneNumberErrMsg.isEmpty ? 0: null,
+                                    height:
+                                        _phoneNumberErrMsg.isEmpty ? 0 : null,
                                     alignment: Alignment.centerLeft,
                                     child: Padding(
-                                      padding: const EdgeInsets.only(top: 6, left: 16),
+                                      padding: const EdgeInsets.only(
+                                          top: 6, left: 10),
                                       child: Text(
                                         _phoneNumberErrMsg,
                                         style: const TextStyle(
@@ -268,7 +285,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 15,),
+                      SizedBox(
+                        height: _phoneNumberErrMsg.isEmpty ? 15 : 6,
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Stack(
@@ -282,8 +301,8 @@ class _LoginPageState extends State<LoginPage> {
                                     color: kColorPrimary.withOpacity(0.2),
                                     blurRadius: 1,
                                     offset: const Offset(
-                                        0.0,
-                                        3
+                                      0.0,
+                                      3,
                                     ),
                                   ),
                                 ],
@@ -296,15 +315,18 @@ class _LoginPageState extends State<LoginPage> {
                               obscureText: _showPassword ? false : true,
                               decoration: InputDecoration(
                                 enabledBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                  borderSide: BorderSide(
+                                      color: kColorPrimary, width: 1),
                                 ),
                                 border: const OutlineInputBorder(),
                                 focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                  borderSide: BorderSide(
+                                      color: kColorPrimary, width: 1),
                                 ),
                                 hintText: 'Password',
                                 suffix: GestureDetector(
-                                  onTap: () => setState(() => _showPassword = !_showPassword),
+                                  onTap: () => setState(
+                                      () => _showPassword = !_showPassword),
                                   child: Text(
                                     _showPassword ? 'Hide' : 'Show',
                                   ),
@@ -314,27 +336,40 @@ class _LoginPageState extends State<LoginPage> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               validator: _validatePassword,
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 15,),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25),
                         child: Container(
                           alignment: Alignment.topRight,
                           child: GestureDetector(
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage(),),),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordPage(),
+                              ),
+                            ),
                             child: const Text(
                               'Forgot Password?',
-                              style: TextStyle(color: kColorPrimary, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  color: kColorPrimary,
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20,),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Material(
@@ -358,7 +393,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20,),
+                      const SizedBox(
+                        height: 20,
+                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: SizedBox(
@@ -366,18 +403,36 @@ class _LoginPageState extends State<LoginPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text('Don\'t have an account ? ', style: TextStyle(fontSize: 13, color: Color(0xff2d2d2d), fontWeight: FontWeight.bold),),
+                              const Text(
+                                'Don\'t have an account ? ',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xff2d2d2d),
+                                    fontWeight: FontWeight.bold),
+                              ),
                               GestureDetector(
                                 onTap: () => {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupPage()))
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SignupPage()))
                                 },
-                                child: const Text('Sign-up', style: TextStyle(fontSize: 15, color: kColorPrimary, fontWeight: FontWeight.bold),),
+                                child: const Text(
+                                  'Sign-up',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: kColorPrimary,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20,),
+                      const SizedBox(
+                        height: 20,
+                      ),
                     ],
                   ),
                 ),
@@ -392,16 +447,16 @@ class _LoginPageState extends State<LoginPage> {
   // custom validate form
   bool _customValidateForm() {
     // phone number
-    if(_phoneNumberCtrl.value.text.isEmpty) {
+    if (_phoneNumberCtrl.value.text.isEmpty) {
       // required
       return false;
     } else {
       // not a number
-      if(RegExp(r'^[a-z]+$').hasMatch(_phoneNumberCtrl.value.text)) {
+      if (RegExp(r'^[a-z]+$').hasMatch(_phoneNumberCtrl.value.text)) {
         return false;
       } else {
         // invalid length
-        if(_phoneNumberCtrl.value.text.length < 10) {
+        if (_phoneNumberCtrl.value.text.length < 10) {
           return false;
         }
       }
@@ -420,7 +475,7 @@ class _LoginPageState extends State<LoginPage> {
       showDialogBox(context);
       _onPostLogin().then((res) {
         final String message = res['message'] ?? 'Error occurred';
-        if(message == 'Success!') {
+        if (message == 'Success!') {
           _onDoneLogin();
         } else {
           Navigator.pop(context);
@@ -436,7 +491,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<Map<String, String>> _onPostLogin() async {
     // check internet connectivity
     final hasInternet = await _hasInternetConnection();
-    if(hasInternet) {
+    if (hasInternet) {
       final mobile = '92${_phoneNumberCtrl.value.text}';
       final password = _passwordCtrl.value.text;
       final user = UserModel(
@@ -445,17 +500,21 @@ class _LoginPageState extends State<LoginPage> {
       );
       final res = await AuthService().onVerifyUser(user);
       return {
-        'message' : res,
+        'message': res,
       };
     } else {
       return {
-        'message' : 'No internet connection',
+        'message': 'No internet connection',
       };
     }
   }
 
-  _onDoneLogin() {
+  _onDoneLogin() async {
     final mobile = '92${_phoneNumberCtrl.value.text}';
+    // subscribe to topic
+    if (!kIsWeb) {
+      await FirebaseMessaging.instance.subscribeToTopic(mobile);
+    }
     SharedPreference().saveUserMobile(mobile).then((_) {
       Navigator.pop(context);
       Fluttertoast.showToast(
@@ -468,9 +527,9 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context) => DashboardPage(
             mobile: mobile,
           ),
-        ), (Route<dynamic> route) => false,
+        ),
+        (Route<dynamic> route) => false,
       );
     });
   }
-
 }
