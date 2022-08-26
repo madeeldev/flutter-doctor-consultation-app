@@ -14,6 +14,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('✅ FUNCTION CALLED: _firebaseMessagingBackgroundHandler');
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
     Future<UserModel> getUserInfo() => SharedPreference().getUserInfo();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: FutureBuilder(
         future: getUserInfo(),
         builder: (context, snapshot) {

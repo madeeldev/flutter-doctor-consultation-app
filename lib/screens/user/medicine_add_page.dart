@@ -149,334 +149,75 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-      child: Scaffold(
-        backgroundColor: kColorBg,
-        appBar: PreferredSize(
-          preferredSize: Size.zero,
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: kColorBg, //ios status bar colors
-            systemOverlayStyle: const SystemUiOverlayStyle(
-              statusBarColor: kColorBg, //android status bar color
-              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-              statusBarIconBrightness:
-                  Brightness.dark, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MedicinePage(
+              mobile: widget.mobile,
             ),
           ),
-        ),
-        body: _isPageLoaded
-            ? ListView(
-                children: [
-                  SizedBox(
-                    width: size.width,
-                    height: size.height,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                            child: Row(
-                              children: [
-                                InkWell(
-                                  onTap: () => Navigator.of(context).pop(),
-                                  child: const Icon(
-                                    Icons.arrow_back_ios,
-                                    size: 18,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        right: size.width * 0.06),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Add Medicine',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: DropdownButtonFormField<String>(
-                              isExpanded: true,
-                              hint: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Select an option'),
-                              ),
-                              value: _selectMember,
-                              borderRadius: BorderRadius.circular(10),
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.only(
-                                  left: 20,
-                                  right: 15,
-                                  bottom: 12,
-                                  top: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: kColorBg2,
-                              ),
-                              items: _membersData.map((item) {
-                                return DropdownMenuItem(
-                                  value: item['HP_ID'].toString(),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          item['HP_Name'],
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: _onChangeRecordSelect,
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return 'This field is required';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                top: 15,
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              child: Column(
+        );
+        return Future.value(true);
+      },
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        child: Scaffold(
+          backgroundColor: kColorBg,
+          appBar: PreferredSize(
+            preferredSize: Size.zero,
+            child: AppBar(
+              elevation: 0,
+              backgroundColor: kColorBg, //ios status bar colors
+              systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: kColorBg, //android status bar color
+                statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+                statusBarIconBrightness:
+                    Brightness.dark, // For Android: (dark icons)
+              ),
+            ),
+          ),
+          body: _isPageLoaded
+              ? ListView(
+                  children: [
+                    SizedBox(
+                      width: size.width,
+                      height: size.height,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                              child: Row(
                                 children: [
-                                  TextFormField(
-                                    controller: _medNameCtrl,
-                                    cursorColor: Colors.black87,
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: const BorderSide(
-                                          color: Colors.grey,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      contentPadding: const EdgeInsets.all(15),
-                                      hintText: 'Medicine name',
-                                    ),
-                                    autovalidateMode:
-                                        AutovalidateMode.onUserInteraction,
-                                    validator: (val) {
-                                      if (val == null || val.isEmpty) {
-                                        return 'This field is required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  DropdownButtonFormField<String>(
-                                    isExpanded: true,
-                                    hint: const Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text('Select an option'),
-                                    ),
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.all(15),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                        borderSide: const BorderSide(
-                                          color: Colors.grey,
-                                          width: 1,
-                                        ),
-                                      ),
-                                    ),
-                                    value: _selectMedDose,
-                                    items: _medicineDoseList.map((dose) {
-                                      return DropdownMenuItem(
-                                        value: dose['key'],
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                dose['value'].toString(),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? val) {
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
-                                      _onChangedDose(val);
-                                    },
-                                    validator: (val) {
-                                      if (val == null || val.isEmpty) {
-                                        return 'This field is required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
                                   InkWell(
                                     onTap: () {
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
-                                      _selectTime(context, SelectTimeOpt.time1);
-                                    },
-                                    child: IgnorePointer(
-                                      child: TextFormField(
-                                        controller: _timeCtrl1,
-                                        textAlign: TextAlign.center,
-                                        decoration: const InputDecoration(
-                                          contentPadding: EdgeInsets.all(15),
-                                          border: OutlineInputBorder(),
-                                          hintText: 'Time of dose no 1',
-                                          suffixIcon: Icon(Icons.access_time),
-                                          prefixText: 'TIME OF DOSE NO.1: ',
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => MedicinePage(
+                                            mobile: widget.mobile,
+                                          ),
                                         ),
-                                      ),
+                                      );
+                                    },
+                                    child: const Icon(
+                                      Icons.arrow_back_ios,
+                                      size: 18,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  _isTime2Visible
-                                      ? InkWell(
-                                          onTap: () {
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                            _selectTime(
-                                                context, SelectTimeOpt.time2);
-                                          },
-                                          child: IgnorePointer(
-                                            child: TextField(
-                                              controller: _timeCtrl2,
-                                              textAlign: TextAlign.center,
-                                              decoration: const InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.all(15),
-                                                border: OutlineInputBorder(),
-                                                hintText: 'Time of dose no 2',
-                                                suffixIcon:
-                                                    Icon(Icons.access_time),
-                                                prefixText:
-                                                    'TIME OF DOSE NO.2: ',
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                  SizedBox(
-                                    height: _isTime2Visible ? 10 : 0,
-                                  ),
-                                  _isTime3Visible
-                                      ? InkWell(
-                                          onTap: () {
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                            _selectTime(
-                                                context, SelectTimeOpt.time3);
-                                          },
-                                          child: IgnorePointer(
-                                            child: TextField(
-                                              controller: _timeCtrl3,
-                                              textAlign: TextAlign.center,
-                                              decoration: const InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.all(15),
-                                                border: OutlineInputBorder(),
-                                                hintText: 'Time of dose no 3',
-                                                suffixIcon:
-                                                    Icon(Icons.access_time),
-                                                prefixText:
-                                                    'TIME OF DOSE NO.3: ',
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                  SizedBox(
-                                    height: _isTime3Visible ? 10 : 0,
-                                  ),
-                                  _isTime4Visible
-                                      ? InkWell(
-                                          onTap: () {
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
-                                            _selectTime(
-                                                context, SelectTimeOpt.time4);
-                                          },
-                                          child: IgnorePointer(
-                                            child: TextField(
-                                              controller: _timeCtrl4,
-                                              textAlign: TextAlign.center,
-                                              decoration: const InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.all(15),
-                                                border: OutlineInputBorder(),
-                                                hintText: 'Time of dose no 4',
-                                                suffixIcon:
-                                                    Icon(Icons.access_time),
-                                                prefixText:
-                                                    'TIME OF DOSE NO.4: ',
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : Container(),
-                                  SizedBox(
-                                    height: _isTime4Visible ? 10 : 0,
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 7),
-                                    margin: const EdgeInsets.only(top: 5),
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: Colors.red.shade900,
-                                        primary: Colors.white,
-                                      ),
-                                      onPressed: _onPressedAddMedicine,
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          right: size.width * 0.06),
+                                      alignment: Alignment.center,
                                       child: const Text(
                                         'Add Medicine',
                                         style: TextStyle(
-                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18,
                                         ),
                                       ),
                                     ),
@@ -484,16 +225,309 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: DropdownButtonFormField<String>(
+                                isExpanded: true,
+                                hint: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Select an option'),
+                                ),
+                                value: _selectMember,
+                                borderRadius: BorderRadius.circular(10),
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.only(
+                                    left: 20,
+                                    right: 15,
+                                    bottom: 12,
+                                    top: 12,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  filled: true,
+                                  fillColor: kColorBg2,
+                                ),
+                                items: _membersData.map((item) {
+                                  return DropdownMenuItem(
+                                    value: item['HP_ID'].toString(),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            item['HP_Name'],
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: _onChangeRecordSelect,
+                                validator: (val) {
+                                  if (val == null || val.isEmpty) {
+                                    return 'This field is required';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                  top: 15,
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    TextFormField(
+                                      controller: _medNameCtrl,
+                                      cursorColor: Colors.black87,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                          borderSide: const BorderSide(
+                                            color: Colors.grey,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.all(15),
+                                        hintText: 'Medicine name',
+                                      ),
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                      validator: (val) {
+                                        if (val == null || val.isEmpty) {
+                                          return 'This field is required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    DropdownButtonFormField<String>(
+                                      isExpanded: true,
+                                      hint: const Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text('Select an option'),
+                                      ),
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.all(15),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(7),
+                                          borderSide: const BorderSide(
+                                            color: Colors.grey,
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      value: _selectMedDose,
+                                      items: _medicineDoseList.map((dose) {
+                                        return DropdownMenuItem(
+                                          value: dose['key'],
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  dose['value'].toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? val) {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                        _onChangedDose(val);
+                                      },
+                                      validator: (val) {
+                                        if (val == null || val.isEmpty) {
+                                          return 'This field is required';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                        _selectTime(
+                                            context, SelectTimeOpt.time1);
+                                      },
+                                      child: IgnorePointer(
+                                        child: TextFormField(
+                                          controller: _timeCtrl1,
+                                          textAlign: TextAlign.center,
+                                          decoration: const InputDecoration(
+                                            contentPadding: EdgeInsets.all(15),
+                                            border: OutlineInputBorder(),
+                                            hintText: 'Time of dose no 1',
+                                            suffixIcon: Icon(Icons.access_time),
+                                            prefixText: 'TIME OF DOSE NO.1: ',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    _isTime2Visible
+                                        ? InkWell(
+                                            onTap: () {
+                                              FocusScope.of(context)
+                                                  .requestFocus(FocusNode());
+                                              _selectTime(
+                                                  context, SelectTimeOpt.time2);
+                                            },
+                                            child: IgnorePointer(
+                                              child: TextField(
+                                                controller: _timeCtrl2,
+                                                textAlign: TextAlign.center,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  contentPadding:
+                                                      EdgeInsets.all(15),
+                                                  border: OutlineInputBorder(),
+                                                  hintText: 'Time of dose no 2',
+                                                  suffixIcon:
+                                                      Icon(Icons.access_time),
+                                                  prefixText:
+                                                      'TIME OF DOSE NO.2: ',
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
+                                    SizedBox(
+                                      height: _isTime2Visible ? 10 : 0,
+                                    ),
+                                    _isTime3Visible
+                                        ? InkWell(
+                                            onTap: () {
+                                              FocusScope.of(context)
+                                                  .requestFocus(FocusNode());
+                                              _selectTime(
+                                                  context, SelectTimeOpt.time3);
+                                            },
+                                            child: IgnorePointer(
+                                              child: TextField(
+                                                controller: _timeCtrl3,
+                                                textAlign: TextAlign.center,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  contentPadding:
+                                                      EdgeInsets.all(15),
+                                                  border: OutlineInputBorder(),
+                                                  hintText: 'Time of dose no 3',
+                                                  suffixIcon:
+                                                      Icon(Icons.access_time),
+                                                  prefixText:
+                                                      'TIME OF DOSE NO.3: ',
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
+                                    SizedBox(
+                                      height: _isTime3Visible ? 10 : 0,
+                                    ),
+                                    _isTime4Visible
+                                        ? InkWell(
+                                            onTap: () {
+                                              FocusScope.of(context)
+                                                  .requestFocus(FocusNode());
+                                              _selectTime(
+                                                  context, SelectTimeOpt.time4);
+                                            },
+                                            child: IgnorePointer(
+                                              child: TextField(
+                                                controller: _timeCtrl4,
+                                                textAlign: TextAlign.center,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  contentPadding:
+                                                      EdgeInsets.all(15),
+                                                  border: OutlineInputBorder(),
+                                                  hintText: 'Time of dose no 4',
+                                                  suffixIcon:
+                                                      Icon(Icons.access_time),
+                                                  prefixText:
+                                                      'TIME OF DOSE NO.4: ',
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
+                                    SizedBox(
+                                      height: _isTime4Visible ? 10 : 0,
+                                    ),
+                                    Container(
+                                      height: 50,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7),
+                                      margin: const EdgeInsets.only(top: 5),
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          backgroundColor: Colors.red.shade900,
+                                          primary: Colors.white,
+                                        ),
+                                        onPressed: _onPressedAddMedicine,
+                                        child: const Text(
+                                          'Add Medicine',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                  ],
+                )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+        ),
       ),
     );
   }
@@ -656,15 +690,19 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       return 'Invalid';
     }
   }
+
   //
   _onDoneAddMedicine(String message) {
     Navigator.of(context).pop();
-    if(message == 'Success!') {
+    if (message == 'Success!') {
       Fluttertoast.showToast(
         msg: 'Member medicine added successfully',
         toastLength: Toast.LENGTH_SHORT,
       );
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MedicinePage(mobile: widget.mobile)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MedicinePage(mobile: widget.mobile)));
     } else {
       Fluttertoast.showToast(
         msg: message,

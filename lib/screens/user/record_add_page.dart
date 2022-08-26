@@ -501,7 +501,11 @@ class _RecordAddPageState extends State<RecordAddPage> {
                                 ),
                                 TextFormField(
                                   controller: _heightCtrl,
-                                  //keyboardType: TextInputType.number,
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                    signed: false,
+                                  ),
                                   decoration: InputDecoration(
                                     isDense: true,
                                     contentPadding: const EdgeInsets.only(
@@ -537,14 +541,19 @@ class _RecordAddPageState extends State<RecordAddPage> {
                                 ),
                                 TextFormField(
                                   controller: _weightCtrl,
-                                  keyboardType: TextInputType.number,
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                    decimal: false,
+                                    signed: false,
+                                  ),
                                   decoration: InputDecoration(
                                     isDense: true,
                                     contentPadding: const EdgeInsets.only(
-                                        left: 12,
-                                        right: 12,
-                                        bottom: 12,
-                                        top: 12),
+                                      left: 12,
+                                      right: 12,
+                                      bottom: 12,
+                                      top: 12,
+                                    ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
@@ -785,14 +794,13 @@ class _RecordAddPageState extends State<RecordAddPage> {
         msg: 'Member record has been added successfully',
         toastLength: Toast.LENGTH_SHORT,
       );
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => RecordPage(
+          builder: (_) => RecordPage(
             mobile: widget.mobile,
             memberId: _selectMember,
           ),
         ),
-        (Route<dynamic> route) => false,
       );
     } else {
       Navigator.pop(context);
@@ -823,7 +831,7 @@ class _RecordAddPageState extends State<RecordAddPage> {
   _computeBMI() {
     String strHeight = _heightCtrl.text;
     String strWeight = _weightCtrl.text;
-    if(strHeight.isNotEmpty && strWeight.isNotEmpty) {
+    if (strHeight.isNotEmpty && strWeight.isNotEmpty) {
       double height = double.parse(strHeight); //ft
       double weight = double.parse(strWeight); //kg
       height = height * 0.3048; // meters

@@ -144,213 +144,241 @@ class _VerifyPinPageState extends State<VerifyPinPage> {
               Form(
                 key: _verifyPinFormKey,
                 child: Container(
-                  width: double.infinity,
+                  width: size.width,
                   height: size.height,
-                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 60),
+                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 100),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            height: 68,
-                            width: 64,
-                            child: TextFormField(
-                              controller: _num1Ctrl,
-                              autofocus: true,
-                              cursorColor: Colors.black,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(1),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
-                                ),
-                              ),
-                              style: Theme.of(context).textTheme.headline6,
-                              onChanged: (textVal) {
-                                if(textVal.length == 1) {
-                                  FocusScope.of(context).nextFocus();
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: 68,
-                            width: 64,
-                            child: TextFormField(
-                              controller: _num2Ctrl,
-                              cursorColor: Colors.black,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(1),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
-                                ),
-                              ),
-                              style: Theme.of(context).textTheme.headline6,
-                              onChanged: (textVal) {
-                                if(textVal.length == 1) {
-                                  FocusScope.of(context).nextFocus();
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: 68,
-                            width: 64,
-                            child: TextFormField(
-                              controller: _num3Ctrl,
-                              cursorColor: Colors.black,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(1),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
-                                ),
-                              ),
-                              style: Theme.of(context).textTheme.headline6,
-                              onChanged: (textVal) {
-                                if(textVal.length == 1) {
-                                  FocusScope.of(context).nextFocus();
-                                }
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            height: 68,
-                            width: 64,
-                            child: TextFormField(
-                              controller: _num4Ctrl,
-                              cursorColor: Colors.black,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(1),
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: kColorPrimary, width: 1),
-                                ),
-                              ),
-                              style: Theme.of(context).textTheme.headline6,
-                              onChanged: (textVal) {
-                                if(textVal.length == 1) {
-                                  FocusScope.of(context).nextFocus();
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20,),
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
-                        height: 120,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.0),
-                          color: Colors.grey.shade200,
-                        ),
-                        child: Column(
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                        child: Row(
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  child: Text(
-                                    'Pin has been sent to your following phone number:',
-                                    style: TextStyle(color: kColorPrimary, fontSize: 16),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.only(right: size.width * 0.06),
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  'Verify Pin',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  child: Text(
-                                    _userMobile,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: kColorPrimary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: Colors.grey,
-                                    primary: Colors.white,
-                                  ),
-                                  onPressed: _onPressedResendBtn,
-                                  child: const Text('RESEND'),
-                                ),
-                              ],
-                            )
                           ],
                         ),
                       ),
-                      const SizedBox(height: 15,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 50,
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: TextButton.icon(
-                              style: TextButton.styleFrom(
-                                padding:
-                                const EdgeInsets.only(right: 15, left: 5),
-                                backgroundColor: Colors.white,
-                                primary: Colors.black54,
-                                side: const BorderSide(
-                                  color: Colors.grey,
-                                  width: 1,
+                      Expanded(
+                        child: Center(
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    height: 68,
+                                    width: 64,
+                                    child: TextFormField(
+                                      controller: _num1Ctrl,
+                                      autofocus: true,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(1),
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                        ),
+                                      ),
+                                      style: Theme.of(context).textTheme.headline6,
+                                      onChanged: (textVal) {
+                                        if(textVal.length == 1) {
+                                          FocusScope.of(context).nextFocus();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 68,
+                                    width: 64,
+                                    child: TextFormField(
+                                      controller: _num2Ctrl,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(1),
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                        ),
+                                      ),
+                                      style: Theme.of(context).textTheme.headline6,
+                                      onChanged: (textVal) {
+                                        if(textVal.length == 1) {
+                                          FocusScope.of(context).nextFocus();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 68,
+                                    width: 64,
+                                    child: TextFormField(
+                                      controller: _num3Ctrl,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(1),
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                        ),
+                                      ),
+                                      style: Theme.of(context).textTheme.headline6,
+                                      onChanged: (textVal) {
+                                        if(textVal.length == 1) {
+                                          FocusScope.of(context).nextFocus();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 68,
+                                    width: 64,
+                                    child: TextFormField(
+                                      controller: _num4Ctrl,
+                                      cursorColor: Colors.black,
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(1),
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: kColorPrimary, width: 1),
+                                        ),
+                                      ),
+                                      style: Theme.of(context).textTheme.headline6,
+                                      onChanged: (textVal) {
+                                        if(textVal.length == 1) {
+                                          FocusScope.of(context).nextFocus();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20,),
+                              Container(
+                                padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  color: Colors.grey.shade200,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const FittedBox(
+                                          fit: BoxFit.fitWidth,
+                                          child: Text(
+                                            'Pin has been sent to your following phone number:',
+                                            style: TextStyle(color: kColorPrimary, fontSize: 16),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        FittedBox(
+                                          fit: BoxFit.fitWidth,
+                                          child: Text(
+                                            _userMobile,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: kColorPrimary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        TextButton(
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: Colors.grey,
+                                            primary: Colors.white,
+                                          ),
+                                          onPressed: _onPressedResendBtn,
+                                          child: const Text('RESEND'),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
                               ),
-                              onPressed: _onPressedBackBtn,
-                              label: const Text('BACK'),
-                              icon: const Icon(Icons.arrow_left_sharp),
-                            ),
-                          ),
-                          Container(
-                            height: 50,
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: TextButton.icon(
-                              style: TextButton.styleFrom(
-                                padding:
-                                const EdgeInsets.only(right: 15, left: 5),
-                                backgroundColor: Colors.red.shade900,
-                                primary: Colors.white,
+                              const SizedBox(height: 15,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    child: TextButton.icon(
+                                      style: TextButton.styleFrom(
+                                        padding:
+                                        const EdgeInsets.only(right: 15, left: 5),
+                                        backgroundColor: Colors.white,
+                                        primary: Colors.black54,
+                                        side: const BorderSide(
+                                          color: Colors.grey,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      onPressed: _onPressedBackBtn,
+                                      label: const Text('BACK'),
+                                      icon: const Icon(Icons.arrow_left_sharp),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                    child: TextButton.icon(
+                                      style: TextButton.styleFrom(
+                                        padding:
+                                        const EdgeInsets.only(right: 15, left: 5),
+                                        backgroundColor: Colors.red.shade900,
+                                        primary: Colors.white,
+                                      ),
+                                      onPressed: _onPressedVerifyBtn,
+                                      label: const Text('VERIFY'),
+                                      icon: const Icon(Icons.done),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              onPressed: _onPressedVerifyBtn,
-                              label: const Text('VERIFY'),
-                              icon: const Icon(Icons.done),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),

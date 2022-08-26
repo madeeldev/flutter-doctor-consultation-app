@@ -16,7 +16,7 @@ import '../../colors.dart';
 
 const kColorBg = Color(0xfff2f6fe);
 
-enum Menu { editRecord, removeRecord }
+enum Menu { removeRecord }
 
 class RecordPage extends StatefulWidget {
   final String mobile;
@@ -153,126 +153,139 @@ class _RecordPageState extends State<RecordPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
-      },
-      child: Scaffold(
-        backgroundColor: kColorBg,
-        appBar: PreferredSize(
-          preferredSize: Size.zero,
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: kColorBg, //ios status bar colors
-            systemOverlayStyle: const SystemUiOverlayStyle(
-              statusBarColor: kColorBg, //android status bar color
-              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-              statusBarIconBrightness:
-                  Brightness.dark, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              mobile: widget.mobile,
             ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _onPressedFab,
-          backgroundColor: kColorPrimary,
-          tooltip: 'Add record',
-          child: const Icon(Icons.add),
-        ),
-        body: _isPageLoaded
-            ? Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DashboardPage(mobile: widget.mobile),
-                              ),
-                              (Route<dynamic> route) => false,
-                            );
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_ios,
-                            size: 18,
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(right: size.width * 0.06),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'Record',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 18),
+              (Route<dynamic> route) => false,
+        );
+        return Future.value(true);
+      },
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Scaffold(
+          backgroundColor: kColorBg,
+          appBar: PreferredSize(
+            preferredSize: Size.zero,
+            child: AppBar(
+              elevation: 0,
+              backgroundColor: kColorBg, //ios status bar colors
+              systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: kColorBg, //android status bar color
+                statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+                statusBarIconBrightness:
+                    Brightness.dark, // For Android: (dark icons)
+              ),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _onPressedFab,
+            backgroundColor: kColorPrimary,
+            tooltip: 'Add record',
+            child: const Icon(Icons.add),
+          ),
+          body: _isPageLoaded
+              ? Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DashboardPage(mobile: widget.mobile),
+                                ),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            child: const Icon(
+                              Icons.arrow_back_ios,
+                              size: 18,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      hint: const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Select an option'),
-                      ),
-                      value: _selectMember,
-                      borderRadius: BorderRadius.circular(10),
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.only(
-                            left: 20, right: 15, bottom: 12, top: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide:
-                              const BorderSide(color: Colors.grey, width: 1),
-                        ),
-                      ),
-                      items: _membersData.map((item) {
-                        return DropdownMenuItem(
-                          value: item['HP_ID'].toString(),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  item['HP_Name'],
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(right: size.width * 0.06),
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Record',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
                               ),
-                            ],
+                            ),
                           ),
-                        );
-                      }).toList(),
-                      onChanged: _onChangeRecordSelect,
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Expanded(
-                    child: _isPageDataLoaded
-                        ? _loadPageData()
-                        : const Center(
-                            child: CircularProgressIndicator(),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        hint: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Select an option'),
+                        ),
+                        value: _selectMember,
+                        borderRadius: BorderRadius.circular(10),
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                              left: 20, right: 15, bottom: 12, top: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                  ),
-                ],
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide:
+                                const BorderSide(color: Colors.grey, width: 1),
+                          ),
+                        ),
+                        items: _membersData.map((item) {
+                          return DropdownMenuItem(
+                            value: item['HP_ID'].toString(),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    item['HP_Name'],
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: _onChangeRecordSelect,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Expanded(
+                      child: _isPageDataLoaded
+                          ? _loadPageData()
+                          : const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                    ),
+                  ],
+                )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+        ),
       ),
     );
   }
@@ -371,10 +384,6 @@ class _RecordPageState extends State<RecordPage> {
                                       ),
                                       itemBuilder: (BuildContext context) =>
                                           <PopupMenuEntry<Menu>>[
-                                        const PopupMenuItem<Menu>(
-                                          value: Menu.editRecord,
-                                          child: Text('Edit'),
-                                        ),
                                         const PopupMenuItem<Menu>(
                                           value: Menu.removeRecord,
                                           child: Text('Remove'),
@@ -772,8 +781,6 @@ class _RecordPageState extends State<RecordPage> {
   //
   _onSelectedPopupMenu(Menu menu, int recordId) {
     switch (menu) {
-      case Menu.editRecord:
-        break;
       case Menu.removeRecord:
         showConfirmationAlert(
           context,

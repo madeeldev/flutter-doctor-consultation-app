@@ -24,7 +24,6 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
 
   final _recoverPassFormKey = GlobalKey<FormState>();
 
-  bool _isLoadingPage = true;
   DateTime? _currentBackPressTime;
 
   // controllers
@@ -35,7 +34,6 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
   bool _showPassword = false;
 
   // user info
-  String? _registrationPin = '';
   String _userMobile = '';
 
   // has internet
@@ -63,8 +61,6 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
     await SharedPreference().getUserInfo().then((userModel) {
       if (userModel.registrationPin != null && userModel.userMobile != null) {
         setState(() {
-          _isLoadingPage = false;
-          _registrationPin = userModel.registrationPin;
           if (userModel.userMobile != null) {
             _userMobile = userModel.userMobile!;
           }
@@ -125,13 +121,7 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
       return Future.value(false);
     } else {
       Fluttertoast.cancel();
-      setState(() {
-        _isLoadingPage = true;
-      });
       await SharedPreference().removeUser().then((_) {
-        setState(() {
-          _isLoadingPage = false;
-        });
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginPage()),
           (Route<dynamic> route) => false,
@@ -153,19 +143,6 @@ class _RecoverPasswordPageState extends State<RecoverPasswordPage> {
               padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ), (Route<dynamic> route) => false,
-                      );
-                    },
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      size: 20,
-                    ),
-                  ),
                   Expanded(
                     child: Container(
                       padding: EdgeInsets.only(right: size.width * 0.06),

@@ -145,224 +145,236 @@ class _MembersPageState extends State<MembersPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).requestFocus(FocusNode());
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) =>
+                DashboardPage(mobile: widget.mobile),
+          ),
+              (Route<dynamic> route) => false,
+        );
+        return Future.value(true);
       },
-      child: Scaffold(
-        backgroundColor: kColorBg,
-        appBar: PreferredSize(
-          preferredSize: Size.zero,
-          child: AppBar(
-            elevation: 0,
-            backgroundColor: kColorBg, //ios status bar colors
-            systemOverlayStyle: const SystemUiOverlayStyle(
-              statusBarColor: kColorBg, //android status bar color
-              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-              statusBarIconBrightness:
-                  Brightness.dark, // For Android: (dark icons)
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Scaffold(
+          backgroundColor: kColorBg,
+          appBar: PreferredSize(
+            preferredSize: Size.zero,
+            child: AppBar(
+              elevation: 0,
+              backgroundColor: kColorBg, //ios status bar colors
+              systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: kColorBg, //android status bar color
+                statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+                statusBarIconBrightness:
+                    Brightness.dark, // For Android: (dark icons)
+              ),
             ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _onPressedFabBtn,
-          backgroundColor: kColorPrimary,
-          child: const Icon(Icons.add),
-        ),
-        body: _isPageLoaded
-            ? ListView(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: size.height,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                          child: Row(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DashboardPage(mobile: widget.mobile),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _onPressedFabBtn,
+            backgroundColor: kColorPrimary,
+            child: const Icon(Icons.add),
+          ),
+          body: _isPageLoaded
+              ? ListView(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: size.height,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                            child: Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            DashboardPage(mobile: widget.mobile),
+                                      ),
+                                      (Route<dynamic> route) => false,
+                                    );
+                                  },
+                                  child: const Icon(
+                                    Icons.arrow_back_ios,
+                                    size: 18,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.only(right: size.width * 0.06),
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      'Members',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18),
                                     ),
-                                    (Route<dynamic> route) => false,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 18),
+                            child: Container(
+                              padding: const EdgeInsets.only(left: 15, right: 15),
+                              height: 44,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                  width: 0.3,
+                                ),
+                              ),
+                              child: TextFormField(
+                                textAlignVertical: TextAlignVertical.center,
+                                controller: _searchMembersCtrl,
+                                onChanged: (String? textVal) =>
+                                    setState(() => {}),
+                                cursorColor: Colors.grey,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  border: InputBorder.none,
+                                  icon: Icon(
+                                    Icons.search,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  hintText: 'Search here',
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey.shade400,
+                                      fontWeight: FontWeight.w500),
+                                  suffixIcon: _searchMembersCtrl.text.isNotEmpty
+                                      ? GestureDetector(
+                                          onTap: _clearSearch,
+                                          child: const Icon(
+                                            Icons.clear,
+                                            color: Colors.black87,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              margin: const EdgeInsets.only(
+                                bottom: 30,
+                              ),
+                              child: AnimatedList(
+                                key: _animatedListKey,
+                                initialItemCount: _membersData.length,
+                                itemBuilder: (context, index, animation) {
+                                  return Container(
+                                    margin: const EdgeInsets.all(4.0),
+                                    child: Slidable(
+                                      startActionPane: ActionPane(
+                                        motion: const ScrollMotion(),
+                                        children: [
+                                          SlidableAction(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            onPressed: (context) => _onDismissed(
+                                              context,
+                                              SlibableAction.delete,
+                                              index,
+                                              _membersData[index]['HP_ID'],
+                                            ),
+                                            backgroundColor: kColorPrimary,
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.delete,
+                                            label: 'Delete',
+                                          ),
+                                          SlidableAction(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            onPressed: (context) => _onDismissed(
+                                              context,
+                                              SlibableAction.cancel,
+                                            ),
+                                            backgroundColor: Colors.blueAccent,
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.cancel,
+                                            label: 'Cancel',
+                                          ),
+                                        ],
+                                      ),
+                                      endActionPane: ActionPane(
+                                        motion: const ScrollMotion(),
+                                        children: [
+                                          SlidableAction(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            onPressed: (context) => _onDismissed(
+                                              context,
+                                              SlibableAction.delete,
+                                              index,
+                                              _membersData[index]['HP_ID'],
+                                            ),
+                                            backgroundColor: kColorPrimary,
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.delete,
+                                            label: 'Delete',
+                                          ),
+                                          SlidableAction(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            onPressed: (context) => _onDismissed(
+                                              context,
+                                              SlibableAction.cancel,
+                                            ),
+                                            backgroundColor: Colors.blueAccent,
+                                            foregroundColor: Colors.white,
+                                            icon: Icons.cancel,
+                                            label: 'Cancel',
+                                          ),
+                                        ],
+                                      ),
+                                      child: AnimatedListItem(
+                                        item: _membersData[index],
+                                        animation: animation,
+                                      ),
+                                    ),
                                   );
                                 },
-                                child: const Icon(
-                                  Icons.arrow_back_ios,
-                                  size: 18,
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.only(right: size.width * 0.06),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Members',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 18),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 18),
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 15, right: 15),
-                            height: 44,
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.grey,
-                                width: 0.3,
-                              ),
-                            ),
-                            child: TextFormField(
-                              textAlignVertical: TextAlignVertical.center,
-                              controller: _searchMembersCtrl,
-                              onChanged: (String? textVal) =>
-                                  setState(() => {}),
-                              cursorColor: Colors.grey,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                                border: InputBorder.none,
-                                icon: Icon(
-                                  Icons.search,
-                                  color: Colors.grey.shade400,
-                                ),
-                                hintText: 'Search here',
-                                hintStyle: TextStyle(
-                                    color: Colors.grey.shade400,
-                                    fontWeight: FontWeight.w500),
-                                suffixIcon: _searchMembersCtrl.text.isNotEmpty
-                                    ? GestureDetector(
-                                        onTap: _clearSearch,
-                                        child: const Icon(
-                                          Icons.clear,
-                                          color: Colors.black87,
-                                        ),
-                                      )
-                                    : null,
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                            ),
-                            margin: const EdgeInsets.only(
-                              bottom: 30,
-                            ),
-                            child: AnimatedList(
-                              key: _animatedListKey,
-                              initialItemCount: _membersData.length,
-                              itemBuilder: (context, index, animation) {
-                                return Container(
-                                  margin: const EdgeInsets.all(4.0),
-                                  child: Slidable(
-                                    startActionPane: ActionPane(
-                                      motion: const ScrollMotion(),
-                                      children: [
-                                        SlidableAction(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          onPressed: (context) => _onDismissed(
-                                            context,
-                                            SlibableAction.delete,
-                                            index,
-                                            _membersData[index]['HP_ID'],
-                                          ),
-                                          backgroundColor: kColorPrimary,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.delete,
-                                          label: 'Delete',
-                                        ),
-                                        SlidableAction(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          onPressed: (context) => _onDismissed(
-                                            context,
-                                            SlibableAction.cancel,
-                                          ),
-                                          backgroundColor: Colors.blueAccent,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.cancel,
-                                          label: 'Cancel',
-                                        ),
-                                      ],
-                                    ),
-                                    endActionPane: ActionPane(
-                                      motion: const ScrollMotion(),
-                                      children: [
-                                        SlidableAction(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          onPressed: (context) => _onDismissed(
-                                            context,
-                                            SlibableAction.delete,
-                                            index,
-                                            _membersData[index]['HP_ID'],
-                                          ),
-                                          backgroundColor: kColorPrimary,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.delete,
-                                          label: 'Delete',
-                                        ),
-                                        SlidableAction(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          onPressed: (context) => _onDismissed(
-                                            context,
-                                            SlibableAction.cancel,
-                                          ),
-                                          backgroundColor: Colors.blueAccent,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.cancel,
-                                          label: 'Cancel',
-                                        ),
-                                      ],
-                                    ),
-                                    child: AnimatedListItem(
-                                      item: _membersData[index],
-                                      animation: animation,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                  ],
+                )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+        ),
       ),
     );
   }
@@ -395,237 +407,242 @@ class _MembersPageState extends State<MembersPage> {
         context: context,
         barrierDismissible: false,
         builder: (context) => StatefulBuilder(
-          builder: (context, setState) => AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      alignment: Alignment.bottomCenter,
-                      padding: const EdgeInsets.only(left: 24),
-                      height: 35,
-                      child: const Text(
-                        'Add New Patient',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        right: 8,
-                        top: 10,
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          _nameCtrl.clear();
-                          _ageCtrl.clear();
-                          _nameErrMsg = '';
-                          _ageErrMsg = '';
-                          Navigator.of(context).pop();
-                        },
-                        child: const Icon(
-                          Icons.cancel,
-                          color: kColorPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(15, 20.0, 15, 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
+          builder: (context, setState) => WillPopScope(
+            onWillPop: () async {
+              return Future.value(false);
+            },
+            child: AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Container(
-                        height: 44,
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 0.5,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                        child: TextFormField(
-                          controller: _nameCtrl,
-                          cursorColor: Colors.grey,
-                          autocorrect: false,
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                            hintText: 'Name',
-                          ),
-                          onChanged: (String? val) => _validateName(
-                            val,
-                            setState,
+                        alignment: Alignment.bottomCenter,
+                        padding: const EdgeInsets.only(left: 24),
+                        height: 35,
+                        child: const Text(
+                          'Add New Patient',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
                           ),
                         ),
                       ),
-                      Container(
-                        height: _nameErrMsg.isEmpty ? 0 : null,
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 6, left: 16),
-                          child: Text(
-                            _nameErrMsg,
-                            style: const TextStyle(
-                              color: kColorPrimary,
-                              fontSize: 12,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          right: 8,
+                          top: 10,
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            _nameCtrl.clear();
+                            _ageCtrl.clear();
+                            _nameErrMsg = '';
+                            _ageErrMsg = '';
+                            Navigator.of(context).pop();
+                          },
+                          child: const Icon(
+                            Icons.cancel,
+                            color: kColorPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(15, 20.0, 15, 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                          height: 44,
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 0.5,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: TextFormField(
+                            controller: _nameCtrl,
+                            cursorColor: Colors.grey,
+                            autocorrect: false,
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              border: InputBorder.none,
+                              hintText: 'Name',
+                            ),
+                            onChanged: (String? val) => _validateName(
+                              val,
+                              setState,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: 44,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey,
-                            width: 0.5,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                        child: TextFormField(
-                          controller: _ageCtrl,
-                          cursorColor: Colors.grey,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                            hintText: 'Age',
-                          ),
-                          onChanged: (String? val) => _validateAge(
-                            val,
-                            setState,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: _ageErrMsg.isEmpty ? 0 : null,
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 6, left: 16),
-                          child: Text(
-                            _ageErrMsg,
-                            style: const TextStyle(
-                              color: kColorPrimary,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                    width: 30,
-                                    child: Radio(
-                                      value: SelectGender.male,
-                                      groupValue: _gender,
-                                      onChanged: (SelectGender? value) {
-                                        setState(() => _gender = value!);
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(
-                                          () => _gender = SelectGender.male,
-                                        );
-                                      },
-                                      child: const Text(
-                                        'Male',
-                                        style: TextStyle(fontSize: 13),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                        Container(
+                          height: _nameErrMsg.isEmpty ? 0 : null,
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 6, left: 16),
+                            child: Text(
+                              _nameErrMsg,
+                              style: const TextStyle(
+                                color: kColorPrimary,
+                                fontSize: 12,
                               ),
                             ),
-                            const SizedBox(
-                              width: 12,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 44,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 0.5,
+                              style: BorderStyle.solid,
                             ),
-                            Expanded(
-                              flex: 2,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    height: 20,
-                                    width: 30,
-                                    child: Radio(
-                                        value: SelectGender.female,
+                          ),
+                          child: TextFormField(
+                            controller: _ageCtrl,
+                            cursorColor: Colors.grey,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              border: InputBorder.none,
+                              hintText: 'Age',
+                            ),
+                            onChanged: (String? val) => _validateAge(
+                              val,
+                              setState,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: _ageErrMsg.isEmpty ? 0 : null,
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 6, left: 16),
+                            child: Text(
+                              _ageErrMsg,
+                              style: const TextStyle(
+                                color: kColorPrimary,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          height: 40,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 30,
+                                      child: Radio(
+                                        value: SelectGender.male,
                                         groupValue: _gender,
                                         onChanged: (SelectGender? value) {
                                           setState(() => _gender = value!);
-                                        }),
-                                  ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(
-                                          () => _gender = SelectGender.female,
-                                        );
-                                      },
-                                      child: const Text(
-                                        'Female',
-                                        style: TextStyle(fontSize: 13),
-                                        overflow: TextOverflow.ellipsis,
+                                        },
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(
+                                            () => _gender = SelectGender.male,
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Male',
+                                          style: TextStyle(fontSize: 13),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 5,),
-                      Material(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(5),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(5),
-                          onTap: () => _onPressedSaveMember(setState),
-                          child: Container(
-                            height: 30,
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.all(8.0),
-                            child: const Text(
-                              "Save",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                              const SizedBox(
+                                width: 12,
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 30,
+                                      child: Radio(
+                                          value: SelectGender.female,
+                                          groupValue: _gender,
+                                          onChanged: (SelectGender? value) {
+                                            setState(() => _gender = value!);
+                                          }),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(
+                                            () => _gender = SelectGender.female,
+                                          );
+                                        },
+                                        child: const Text(
+                                          'Female',
+                                          style: TextStyle(fontSize: 13),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      )
-                    ],
+                        const SizedBox(height: 5,),
+                        Material(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(5),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(5),
+                            onTap: () => _onPressedSaveMember(setState),
+                            child: Container(
+                              height: 30,
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.all(8.0),
+                              child: const Text(
+                                "Save",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

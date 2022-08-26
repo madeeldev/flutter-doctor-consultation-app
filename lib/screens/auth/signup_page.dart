@@ -191,578 +191,589 @@ class _SignupPageState extends State<SignupPage> {
       return kColorPrimary;
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size.zero,
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white, //ios status bar colors
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.white, //android status bar color
-            statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-            statusBarIconBrightness:
-                Brightness.dark, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          ),
+              (Route<dynamic> route) => false,
+        );
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: PreferredSize(
+          preferredSize: Size.zero,
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white, //ios status bar colors
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: Colors.white, //android status bar color
+              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+              statusBarIconBrightness:
+                  Brightness.dark, // For Android: (dark icons)
+            ),
           ),
         ),
-      ),
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-        },
-        child: SafeArea(
-          child: ListView(
-            children: [
-              Form(
-                key: _signupFormKey,
-                child: Column(children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
-                              ),
-                              (Route<dynamic> route) => false,
-                            );
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_ios,
-                            size: 20,
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(right: size.width * 0.06),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'Signup',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 18),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.05,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 58,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: kColorPrimary.withOpacity(0.2),
-                                blurRadius: 1,
-                                offset: const Offset(0.0, 3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        TextFormField(
-                          controller: _nameCtrl,
-                          cursorColor: Colors.black,
-                          decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            border: OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            hintText: 'Full Name',
-                          ),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: _validateName,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: kColorPrimary.withOpacity(0.2),
-                                blurRadius: 1,
-                                offset: const Offset(0.0, 3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              alignment: Alignment.center,
-                              height: 60,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                  color: kColorPrimary,
-                                  width: kInputBorderWidth,
-                                  style: BorderStyle.solid,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: SafeArea(
+            child: ListView(
+              children: [
+                Form(
+                  key: _signupFormKey,
+                  child: Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
                                 ),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            child: const Icon(
+                              Icons.arrow_back_ios,
+                              size: 20,
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(right: size.width * 0.06),
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Signup',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500, fontSize: 18),
                               ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        FocusScope.of(context)
-                                            .requestFocus(_phoneNumberNode);
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.center,
-                                            padding: const EdgeInsets.only(
-                                                bottom: 1),
-                                            child: Text(
-                                              '+',
-                                              style: TextStyle(
-                                                color: kColorPrimary,
-                                                fontSize: size.width * 0.038,
-                                                fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.05,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(0.0, 3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _nameCtrl,
+                            cursorColor: Colors.black,
+                            decoration: const InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              hintText: 'Full Name',
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: _validateName,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(0.0, 3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: 60,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    color: kColorPrimary,
+                                    width: kInputBorderWidth,
+                                    style: BorderStyle.solid,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          FocusScope.of(context)
+                                              .requestFocus(_phoneNumberNode);
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 1),
+                                              child: Text(
+                                                '+',
+                                                style: TextStyle(
+                                                  color: kColorPrimary,
+                                                  fontSize: size.width * 0.038,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          Text(
-                                            '92',
-                                            style: TextStyle(
-                                              color: kColorPrimary,
-                                              fontSize: size.width * 0.035,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 0.5,
+                                            Text(
+                                              '92',
+                                              style: TextStyle(
+                                                color: kColorPrimary,
+                                                fontSize: size.width * 0.035,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 0.5,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
+                                    Container(
+                                      width: 1,
+                                      color: kColorPrimary.withOpacity(0.5),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        child: TextFormField(
+                                          focusNode: _phoneNumberNode,
+                                          controller: _phoneNumberCtrl,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(10),
+                                          ],
+                                          cursorColor: Colors.black,
+                                          decoration: const InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: 'Phone Number'),
+                                          autovalidateMode:
+                                              AutovalidateMode.onUserInteraction,
+                                          onChanged: _validatePhoneNumber,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                height: _phoneNumberErrMsg.isEmpty ? 0 : null,
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 6, left: 16),
+                                  child: Text(
+                                    _phoneNumberErrMsg,
+                                    style: const TextStyle(
+                                      color: kColorPrimary,
+                                      fontSize: 12,
+                                    ),
                                   ),
-                                  Container(
-                                    width: 1,
-                                    color: kColorPrimary.withOpacity(0.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(0.0, 3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _emailCtrl,
+                            cursorColor: Colors.black,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: const InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              hintText: 'Email',
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: _validateEmail,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(0.0, 3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _passwordCtrl,
+                            cursorColor: Colors.black,
+                            obscureText: _showPassword ? false : true,
+                            decoration: InputDecoration(
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              border: const OutlineInputBorder(),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              hintText: 'Password',
+                              suffix: GestureDetector(
+                                onTap: () => setState(
+                                    () => _showPassword = !_showPassword),
+                                child: Text(
+                                  _showPassword ? 'Hide' : 'Show',
+                                ),
+                              ),
+                              suffixStyle: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: _validatePassword,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(0.0, 3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          TextFormField(
+                            controller: _confirmPassCtrl,
+                            cursorColor: Colors.black,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: kColorPrimary, width: 1),
+                              ),
+                              hintText: 'Confirm Password',
+                            ),
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: _validateConfirmPassword,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 58,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: kColorPrimary.withOpacity(0.2),
+                                  blurRadius: 1,
+                                  offset: const Offset(0.0, 3),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: 58,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    color: kColorPrimary,
+                                    width: kInputBorderWidth,
+                                    style: BorderStyle.solid,
                                   ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15),
-                                      child: TextFormField(
-                                        focusNode: _phoneNumberNode,
-                                        controller: _phoneNumberCtrl,
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          LengthLimitingTextInputFormatter(10),
-                                        ],
-                                        cursorColor: Colors.black,
-                                        decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'Phone Number'),
-                                        autovalidateMode:
-                                            AutovalidateMode.onUserInteraction,
-                                        onChanged: _validatePhoneNumber,
+                                ),
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 15),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      hint: const Text('Select City'),
+                                      isExpanded: true,
+                                      value: _selectedCity,
+                                      onChanged: (selectedVal) {
+                                        setState(() {
+                                          _selectedCity = selectedVal;
+                                          _cityErrMsg = '';
+                                        });
+                                      },
+                                      // items: const [],
+                                      items: _dropdownItems.map((cityItem) {
+                                        return DropdownMenuItem(
+                                          value: cityItem['City_Code'].toString(),
+                                          child: Text(cityItem['City_Desc']),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                height: _cityErrMsg.isEmpty ? 0 : null,
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 6, left: 16),
+                                  child: Text(
+                                    _cityErrMsg,
+                                    style: const TextStyle(
+                                      color: kColorPrimary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            checkColor: Colors.white,
+                            fillColor:
+                                MaterialStateProperty.resolveWith(getColor),
+                            value: _isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _isChecked = value!;
+                              });
+                            },
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _isChecked = !_isChecked;
+                                  });
+                                },
+                                child: const Text(
+                                  'I have read and agree to all',
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 3,
+                              ),
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const TermsAndConditionsPage(),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Terms & Conditions',
+                                      style: TextStyle(
+                                          color: Colors.blueAccent,
+                                          fontSize: size.width * 0.035,
+                                          letterSpacing: 0.5),
+                                    ),
+                                  ),
+                                  const Text(' and '),
+                                  GestureDetector(
+                                    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const PrivacyPolicyPage())),
+                                    child: Text(
+                                      'Privacy Policy',
+                                      style: TextStyle(
+                                        color: Colors.blueAccent,
+                                        fontSize: size.width * 0.035,
+                                        letterSpacing: 0.5,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            Container(
-                              height: _phoneNumberErrMsg.isEmpty ? 0 : null,
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 6, left: 16),
-                                child: Text(
-                                  _phoneNumberErrMsg,
-                                  style: const TextStyle(
-                                    color: kColorPrimary,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 58,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: kColorPrimary.withOpacity(0.2),
-                                blurRadius: 1,
-                                offset: const Offset(0.0, 3),
-                              ),
                             ],
-                            borderRadius: BorderRadius.circular(5),
                           ),
-                        ),
-                        TextFormField(
-                          controller: _emailCtrl,
-                          cursorColor: Colors.black,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            border: OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            hintText: 'Email',
-                          ),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: _validateEmail,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 58,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: kColorPrimary.withOpacity(0.2),
-                                blurRadius: 1,
-                                offset: const Offset(0.0, 3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        TextFormField(
-                          controller: _passwordCtrl,
-                          cursorColor: Colors.black,
-                          obscureText: _showPassword ? false : true,
-                          decoration: InputDecoration(
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            border: const OutlineInputBorder(),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            hintText: 'Password',
-                            suffix: GestureDetector(
-                              onTap: () => setState(
-                                  () => _showPassword = !_showPassword),
-                              child: Text(
-                                _showPassword ? 'Hide' : 'Show',
-                              ),
-                            ),
-                            suffixStyle: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: _validatePassword,
-                        ),
-                      ],
+                    const SizedBox(
+                      height: 20,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 58,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: kColorPrimary.withOpacity(0.2),
-                                blurRadius: 1,
-                                offset: const Offset(0.0, 3),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Material(
+                        color: kColorPrimary,
+                        borderRadius: BorderRadius.circular(2),
+                        child: InkWell(
+                          onTap: _onPressedSignup,
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: double.infinity,
+                            height: size.height * 0.065,
+                            child: Text(
+                              'Signup',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: size.width * 0.045,
                               ),
-                            ],
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        TextFormField(
-                          controller: _confirmPassCtrl,
-                          cursorColor: Colors.black,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            border: OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: kColorPrimary, width: 1),
-                            ),
-                            hintText: 'Confirm Password',
-                          ),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: _validateConfirmPassword,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 58,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: kColorPrimary.withOpacity(0.2),
-                                blurRadius: 1,
-                                offset: const Offset(0.0, 3),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                              alignment: Alignment.center,
-                              height: 58,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                  color: kColorPrimary,
-                                  width: kInputBorderWidth,
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    hint: const Text('Select City'),
-                                    isExpanded: true,
-                                    value: _selectedCity,
-                                    onChanged: (selectedVal) {
-                                      setState(() {
-                                        _selectedCity = selectedVal;
-                                        _cityErrMsg = '';
-                                      });
-                                    },
-                                    // items: const [],
-                                    items: _dropdownItems.map((cityItem) {
-                                      return DropdownMenuItem(
-                                        value: cityItem['City_Code'].toString(),
-                                        child: Text(cityItem['City_Desc']),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              height: _cityErrMsg.isEmpty ? 0 : null,
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 6, left: 16),
-                                child: Text(
-                                  _cityErrMsg,
-                                  style: const TextStyle(
-                                    color: kColorPrimary,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          checkColor: Colors.white,
-                          fillColor:
-                              MaterialStateProperty.resolveWith(getColor),
-                          value: _isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _isChecked = value!;
-                            });
-                          },
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _isChecked = !_isChecked;
-                                });
-                              },
-                              child: const Text(
-                                'I have read and agree to all',
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 3,
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const TermsAndConditionsPage(),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Terms & Conditions',
-                                    style: TextStyle(
-                                        color: Colors.blueAccent,
-                                        fontSize: size.width * 0.035,
-                                        letterSpacing: 0.5),
-                                  ),
-                                ),
-                                const Text(' and '),
-                                GestureDetector(
-                                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => const PrivacyPolicyPage())),
-                                  child: Text(
-                                    'Privacy Policy',
-                                    style: TextStyle(
-                                      color: Colors.blueAccent,
-                                      fontSize: size.width * 0.035,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Material(
-                      color: kColorPrimary,
-                      borderRadius: BorderRadius.circular(2),
-                      child: InkWell(
-                        onTap: _onPressedSignup,
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: size.height * 0.065,
-                          child: Text(
-                            'Signup',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: size.width * 0.045,
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Already have an account ? ',
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xff2d2d2d),
-                            fontWeight: FontWeight.bold),
-                      ),
-                      GestureDetector(
-                        onTap: () => {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()))
-                        },
-                        child: const Text(
-                          'Log-in',
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Already have an account ? ',
                           style: TextStyle(
-                              fontSize: 15,
-                              color: kColorPrimary,
+                              fontSize: 13,
+                              color: Color(0xff2d2d2d),
                               fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ]),
-              ),
-            ],
+                        GestureDetector(
+                          onTap: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginPage()))
+                          },
+                          child: const Text(
+                            'Log-in',
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: kColorPrimary,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ]),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hami/colors.dart';
+import 'package:flutter_hami/screens/user/awareness_material_page.dart';
 import 'package:flutter_hami/services/awareness_data_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -90,285 +91,292 @@ class _VideosPageState extends State<VideosPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: kColorPrimary,
-      appBar: PreferredSize(
-        preferredSize: Size.zero,
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: kColorPrimary, //ios status bar colors
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: kColorPrimary, //android status bar color
-            statusBarBrightness: Brightness.dark, // For iOS: (dark icons)
-            statusBarIconBrightness:
-                Brightness.light, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AwarenessMaterialPage(mobile: widget.mobile),
+          ),
+        );
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: kColorPrimary,
+        appBar: PreferredSize(
+          preferredSize: Size.zero,
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: kColorPrimary, //ios status bar colors
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: kColorPrimary, //android status bar color
+              statusBarBrightness: Brightness.dark, // For iOS: (dark icons)
+              statusBarIconBrightness:
+                  Brightness.light, // For Android: (dark icons)
+            ),
           ),
         ),
-      ),
-      body: Container(
-        width: size.width,
-        height: size.height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              kColorPrimary,
-              Colors.white,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+        body: Container(
+          width: size.width,
+          height: size.height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                kColorPrimary,
+                Colors.white,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            _playArea == false
-                ? SizedBox(
-                    height: 320,
-                    width: size.width,
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 20,
-                          width: size.width,
-                          margin: const EdgeInsets.only(
-                            left: 15,
-                            top: 20,
-                            right: 15,
-                          ),
-                          alignment: Alignment.topLeft,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back_ios,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.info_outline,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 80),
-                            child: Column(
+          child: Column(
+            children: [
+              _playArea == false
+                  ? SizedBox(
+                      height: 320,
+                      width: size.width,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 20,
+                            width: size.width,
+                            margin: const EdgeInsets.only(
+                              left: 15,
+                              top: 20,
+                              right: 15,
+                            ),
+                            alignment: Alignment.topLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: const [
-                                      Text(
-                                        'HAMI',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 32,
-                                          letterSpacing: 4,
-                                          fontWeight: FontWeight.bold,
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => AwarenessMaterialPage(
+                                          mobile: widget.mobile,
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Text(
-                                        'Awareness Material',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          letterSpacing: 1.5,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text(
-                                  'Videos will be displayed here',
-                                  style: TextStyle(
+                                    );
+                                  },
+                                  child: const Icon(
+                                    Icons.arrow_back_ios,
+                                    size: 18,
                                     color: Colors.white,
-                                    letterSpacing: 0.5,
-                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : SizedBox(
-                    height: 320,
-                    width: size.width,
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: _playView(context),
-                        ),
-                        _controlView(),
-                      ],
-                    ),
-                  ),
-            Expanded(
-              child: Container(
-                width: size.width,
-                padding: const EdgeInsets.only(top: 30),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(size.height * 0.07),
-                  ),
-                ),
-                child: _isPageLoaded
-                    ? _videosData.isNotEmpty
-                        ? ListView.builder(
-                            itemCount: _videosData.length,
-                            itemBuilder: (_, int idx) {
-                              return GestureDetector(
-                                onTap: () {
-                                  _onTapVideo(idx);
-                                  setState(() {
-                                    if (_playArea == false) {
-                                      _playArea = true;
-                                    }
-                                  });
-                                },
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      height: 70,
-                                      margin: const EdgeInsets.only(
-                                        left: 20,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            height: 70,
-                                            width: 70,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                              border: Border.all(
-                                                color: Colors.black26,
-                                              ),
-                                              image: DecorationImage(
-                                                image:
-                                                    CachedNetworkImageProvider(
-                                                  _videosData[idx]
-                                                      ['HAM_Thumbnail'],
-                                                ),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            child: const Icon(
-                                              Icons.play_circle,
-                                              color: Colors.white,
-                                            ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.only(bottom: 30),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: const [
+                                        Text(
+                                          'HAMI',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 30,
+                                            letterSpacing: 4,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  SizedBox(
-                                                    child: Text(
-                                                      _videosData[idx]
-                                                          ['HAM_Desc'],
-                                                      style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  Text(
-                                                    'Click on video to play',
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: Colors.black
-                                                          .withOpacity(0.5),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      children: [
-                                        const SizedBox(
-                                          width: 20,
                                         ),
-                                        for (var i = 0; i < 70; i++)
-                                          i.isEven
-                                              ? Container(
-                                                  width: 3,
-                                                  height: 1,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.red,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            2),
-                                                  ),
-                                                )
-                                              : Container(
-                                                  width: 3,
-                                                  height: 1,
-                                                  color: Colors.white,
-                                                ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          'Awareness Videos',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            letterSpacing: 1.5,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          )
-                        : Container(
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.only(
-                              bottom: 20,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: const Text('No videos was found to play.'),
-                          )
-                    : Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.only(
-                          bottom: 20,
-                        ),
-                        child: const CircularProgressIndicator(),
+                          ),
+                        ],
                       ),
+                    )
+                  : SizedBox(
+                      height: 320,
+                      width: size.width,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: _playView(context),
+                          ),
+                          _controlView(),
+                        ],
+                      ),
+                    ),
+              Expanded(
+                child: Container(
+                  width: size.width,
+                  padding: const EdgeInsets.only(top: 30),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(size.height * 0.07),
+                    ),
+                  ),
+                  child: _isPageLoaded
+                      ? _videosData.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: _videosData.length,
+                              itemBuilder: (_, int idx) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    _onTapVideo(idx);
+                                    setState(() {
+                                      if (_playArea == false) {
+                                        _playArea = true;
+                                      }
+                                    });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: 70,
+                                        margin: const EdgeInsets.only(
+                                          left: 20,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              height: 70,
+                                              width: 70,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                border: Border.all(
+                                                  color: Colors.black26,
+                                                ),
+                                                image: DecorationImage(
+                                                  image:
+                                                      CachedNetworkImageProvider(
+                                                    _videosData[idx]
+                                                        ['HAM_Thumbnail'],
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                              child: const Icon(
+                                                Icons.play_circle,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 10),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      child: Text(
+                                                        _videosData[idx]
+                                                            ['HAM_Desc'],
+                                                        style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Text(
+                                                      'Click on video to play',
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Colors.black
+                                                            .withOpacity(0.5),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        children: [
+                                          const SizedBox(
+                                            width: 20,
+                                          ),
+                                          for (var i = 0; i < 70; i++)
+                                            i.isEven
+                                                ? Container(
+                                                    width: 3,
+                                                    height: 1,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              2),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    width: 3,
+                                                    height: 1,
+                                                    color: Colors.white,
+                                                  ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            )
+                          : Container(
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.only(
+                                bottom: 20,
+                              ),
+                              child: const Text('No videos was found to play.'),
+                            )
+                      : Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.only(
+                            bottom: 20,
+                          ),
+                          child: const CircularProgressIndicator(),
+                        ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

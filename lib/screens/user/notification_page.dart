@@ -6,6 +6,7 @@ import 'package:flutter_hami/widget/show_dialog_html.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 
+import '../../model/shared_preference.dart';
 import '../../services/member_service.dart';
 import '../../widget/connectivity_banner.dart';
 import '../dashboard_page.dart';
@@ -13,8 +14,8 @@ import '../dashboard_page.dart';
 const kColorBg = Color(0xfff2f6fe);
 
 class NotificationPage extends StatefulWidget {
-  final String mobile;
-  const NotificationPage({required this.mobile, Key? key}) : super(key: key);
+  final String? mobile;
+  const NotificationPage({this.mobile, Key? key}) : super(key: key);
 
   @override
   State<NotificationPage> createState() => _NotificationPageState();
@@ -26,6 +27,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
   // check if page is loaded
   bool _isPageLoaded = false;
+  String? _mobile;
 
   // has internet
   late StreamSubscription internetSubscription;
@@ -43,8 +45,18 @@ class _NotificationPageState extends State<NotificationPage> {
       }
     });
     // load notifications data
-    _loadNotificationData();
+    _loadUserData();
     super.initState();
+  }
+
+  _loadUserData() async {
+    final data = await SharedPreference().getUserInfo();
+    if(widget.mobile == null) {
+      _mobile = data.userMobile;
+    } else {
+      _mobile = widget.mobile;
+    }
+    _loadNotificationData();
   }
 
   // check internet
@@ -57,7 +69,7 @@ class _NotificationPageState extends State<NotificationPage> {
     final hasInternet = await _hasInternetConnection();
     if (hasInternet) {
       final result = await MemberService().onLoadMemberNotifications(
-        widget.mobile,
+        _mobile!,
       );
       final message = result['message'];
       if (message == 'success') {
@@ -83,85 +95,94 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: kColorBg,
-      appBar: PreferredSize(
-        preferredSize: Size.zero,
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: kColorBg, //ios status bar colors
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: kColorBg, //android status bar color
-            statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-            statusBarIconBrightness:
-                Brightness.dark, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => DashboardPage(mobile: widget.mobile!)),
+              (Route<dynamic> route) => false,
+        );
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: kColorBg,
+        appBar: PreferredSize(
+          preferredSize: Size.zero,
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: kColorBg, //ios status bar colors
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: kColorBg, //android status bar color
+              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+              statusBarIconBrightness:
+                  Brightness.dark, // For Android: (dark icons)
+            ),
           ),
         ),
-      ),
-      body: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: _isPageLoaded
-            ? Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DashboardPage(mobile: widget.mobile),
-                              ),
-                              (Route<dynamic> route) => false,
-                            );
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_ios,
-                            size: 18,
+        body: SizedBox(
+          width: size.width,
+          height: size.height,
+          child: _isPageLoaded
+              ? Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                      child: Row(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DashboardPage(mobile: _mobile!),
+                                ),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            child: const Icon(
+                              Icons.arrow_back_ios,
+                              size: 18,
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(right: size.width * 0.06),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'Notifications',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(right: size.width * 0.06),
+                              alignment: Alignment.center,
+                              child: const Text(
+                                'Notifications',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      bottom: 8,
-                    ),
-                    child: const Text(
-                      'All notifications list',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        ],
                       ),
                     ),
-                  ),
-                  Expanded(child: _buildShowNotification()),
-                ],
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        bottom: 8,
+                      ),
+                      child: const Text(
+                        'All notifications list',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: _buildShowNotification()),
+                  ],
+                )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+        ),
       ),
     );
   }
@@ -315,7 +336,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   onPressed: () => Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) =>
-                          DashboardPage(mobile: widget.mobile),
+                          DashboardPage(mobile: _mobile!),
                     ),
                   ),
                   child: const Text(

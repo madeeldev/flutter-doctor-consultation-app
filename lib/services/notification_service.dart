@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hami/main.dart';
+import 'package:flutter_hami/screens/user/notification_page.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -39,18 +41,7 @@ class NotificationService {
       initializationSettings,
       onSelectNotification: (String? id) async {
         debugPrint("✅ onSelectNotification");
-        if (id!.isNotEmpty) {
-          debugPrint("✅ Router Value1234 $id");
-
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => DemoScreen(
-          //       id: id,
-          //     ),
-          //   ),
-          // );
-
-        }
+        navigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => const NotificationPage()));
       },
     );
   }

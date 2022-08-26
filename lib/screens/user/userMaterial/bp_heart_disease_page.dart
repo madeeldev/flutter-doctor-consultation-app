@@ -8,6 +8,7 @@ import 'package:photo_view/photo_view.dart';
 
 import '../../../services/awareness_data_service.dart';
 import '../../../widget/connectivity_banner.dart';
+import '../awareness_material_page.dart';
 
 const kColorBg = Colors.white;
 
@@ -83,95 +84,115 @@ class _BpRamazanState extends State<BPHeartDiseasePage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: kColorBg,
-      appBar: PreferredSize(
-        preferredSize: Size.zero,
-        child: AppBar(
-          elevation: 0,
-          backgroundColor: kColorBg, //ios status bar colors
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: kColorBg, //android status bar color
-            statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-            statusBarIconBrightness:
-                Brightness.dark, // For Android: (dark icons)
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AwarenessMaterialPage(
+              mobile: widget.mobile,
+            ),
+          ),
+        );
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: kColorBg,
+        appBar: PreferredSize(
+          preferredSize: Size.zero,
+          child: AppBar(
+            elevation: 0,
+            backgroundColor: kColorBg, //ios status bar colors
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: kColorBg, //android status bar color
+              statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+              statusBarIconBrightness:
+                  Brightness.dark, // For Android: (dark icons)
+            ),
           ),
         ),
-      ),
-      body: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: _isPageLoaded
-            ? Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_ios,
-                            size: 18,
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Blood Pressure & Heart Disease',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18,
+        body: SizedBox(
+          width: size.width,
+          height: size.height,
+          child: _isPageLoaded
+              ? Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AwarenessMaterialPage(
+                                    mobile: widget.mobile,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Icon(
+                              Icons.arrow_back_ios,
+                              size: 18,
                             ),
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isGridview = !_isGridview;
-                            });
-                          },
-                          child: Icon(
-                            _isGridview ? Icons.grid_view : Icons.toc_outlined,
+                          Container(
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'Blood Pressure & Heart Disease',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                              ),
+                            ),
                           ),
-                        )
-                      ],
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _isGridview = !_isGridview;
+                              });
+                            },
+                            child: Icon(
+                              _isGridview ? Icons.grid_view : Icons.toc_outlined,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  _imagesData.isNotEmpty
-                      ? Container(
-                          width: size.width,
-                          padding: const EdgeInsets.only(left: 15, bottom: 10),
-                          child: Text(
-                            'All images',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black.withOpacity(0.8),
-                              fontWeight: FontWeight.w600,
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    _imagesData.isNotEmpty
+                        ? Container(
+                            width: size.width,
+                            padding: const EdgeInsets.only(left: 15, bottom: 10),
+                            child: Text(
+                              'All images',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black.withOpacity(0.8),
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        )
-                      : Container(),
-                  Expanded(
-                    child: _imagesData.isNotEmpty
-                        ? _isGridview
-                            ? _buildGridView()
-                            : _buildListView()
-                        : const Center(
-                            child: Text('No data was found to show!'),
-                          ),
-                  ),
-                ],
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                          )
+                        : Container(),
+                    Expanded(
+                      child: _imagesData.isNotEmpty
+                          ? _isGridview
+                              ? _buildGridView()
+                              : _buildListView()
+                          : const Center(
+                              child: Text('No data was found to show!'),
+                            ),
+                    ),
+                  ],
+                )
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
+        ),
       ),
     );
   }
