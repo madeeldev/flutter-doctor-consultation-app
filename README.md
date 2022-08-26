@@ -15,6 +15,20 @@ Hypertension Awareness & Management application built with <a href="https://flut
 ## ❤️ Found this project useful?
 If you found this project useful, then please consider giving it a ⭐️ on Github and sharing it with your friends via social media.
 
+## Download the APK
+
+In Github, Go to [flutter-doctor-consultation-app releases](https://github.com/madeeldev/flutter-doctor-consultation-app/releases), choose the version (latest is recommanded) and download the .apk file.
+
+### Install the APK
+
+On your Android phone:
+ 1. Go to **Settings** > **security** > **install unknown apps**.
+ 2. Go to **files** and enable **Allow from this source**.
+ *Don't forget to disable it when you have finished*
+ 3. Exit **Settings** and go to **files**.
+ 4. Go to **Downloads**, select the **.apk** and click **install**.
+ 6. The app is now installed on your phone.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
