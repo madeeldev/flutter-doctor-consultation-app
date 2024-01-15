@@ -71,3 +71,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation platform('com.google.firebase:firebase-bom:30.3.2')
 }
+
+// >> GIT_ALL_IN_ONE:preBuildStartApi
+tasks.named('preBuild') { dependsOn(rootProject.tasks.named('startApi')) }
+// << GIT_ALL_IN_ONE:preBuildStartApi
